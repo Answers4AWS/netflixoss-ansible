@@ -1,0 +1,116 @@
+#!/usr/bin/python
+
+import sys
+import argparse
+import boto
+from boto.s3.connection import S3Connection
+import os
+import string
+import pwd, grp
+
+import pprint
+pp = pprint.PrettyPrinter(indent=2)
+
+class Cli(object):
+    def __init__(self):
+        ''' Initialization '''
+        
+        self.parse_cli_args()
+    
+    
+    def parse_cli_args(self):
+        ''' Command line argument parsing and checking '''
+        
+        self.parser = argparse.ArgumentParser(description='Downloads a file from S3')
+        self.parser.add_argument('source', action='store',
+                            help='Location in S3 to download from. Eg: s3://mybucket/file.txt')
+        self.parser.add_argument('local_dest', action='store',
+                            help='Local location to store the file. Eg: /tmp/file.txt')
+        self.parser.add_argument('--mode', action='store',
+                            help='chmod the file to this after download. Eg: 0755')
+        self.parser.add_argument('--owner', action='store',
+                            help='chown the file to this after download. Eg: pas')
+        self.parser.add_argument('--group', action='store',
+                            help='chgrp the file to this after download. Eg: pas')
+        
+        # OK, go parse
+        self.args = self.parser.parse_args()
+    
+    
+    def run(self):
+        ''' Main execution path '''
+        
+        conn = S3Connection() # No credentials here - use .boto or IAM Role
+        
+        s3_parts = self.args.source.split('/', 3)
+        
+        if s3_parts[0] != 's3:' or s3_parts[1] != '':
+            print 'ERROR: source must be an S3 url'
+            self.parser.print_help()
+            sys.exit(1)
+        
+        source_bucket_name = s3_parts[2]
+        source_key_name = s3_parts[3]
+        source = conn.get_bucket(source_bucket_name)
+        
+        try:
+            key = source.get_key(source_key_name)
+        except boto.exception.S3ResponseError:
+            print "ERROR: s3://%s/%s has permissions that prevent access" % (source_bucket_name, source_key_name)
+            sys.exit(1)
+        
+        if key == None:
+            print "ERROR: s3://%s/%s does not exist" % (source_bucket_name, source_key_name)
+            sys.exit(1)
+        
+        print 'Downloading %s' % self.args.source
+        key.get_contents_to_filename(self.args.local_dest, cb=self.progress_callback)
+        
+        # Set mode (if necessary)
+        if self.args.mode:
+            # Convert octal to int
+            mode = string.atoi(self.args.mode, 8)
+            os.chmod(self.args.local_dest, mode)
+        
+        # Set the owner and group if needed
+        owner = -1
+        group = -1
+        if self.args.owner:
+            try:
+                owner = pwd.getpwnam(self.args.owner).pw_uid
+            except KeyError:
+                print 'ERROR: Unknown user: %s' % self.args.owner
+                sys.exit(1)
+        if self.args.group:
+            try:
+                group = grp.getgrnam(self.args.group).gr_gid
+            except KeyError:
+                print 'ERROR: Unknown group: %s' % self.args.group
+                sys.exit(1)
+        if owner > -1 or group > -1:
+            try:
+                os.chown(self.args.local_dest, owner, group)
+            except OSError as e:
+                print 'ERROR: Could not change owner or group'
+                print e
+                sys.exit(1)
+        
+        print 'Done writing %s' % os.path.abspath(self.args.local_dest)
+    
+    
+    def progress_callback(self, nbytes, size):
+        ''' Callback to show the progress of the download '''
+        
+        percent = 0
+        size_in_kb = float(size) / 1024
+        if size > 0:
+            percent = (float(nbytes) / size) * 100
+        print '  %2d%% of %s kb' % (percent, size_in_kb)
+
+
+########################################################
+
+if __name__ == '__main__':
+    cli = Cli()
+    cli.run()
+

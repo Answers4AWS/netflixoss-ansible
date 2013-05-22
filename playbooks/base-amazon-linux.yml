@@ -1,0 +1,12 @@
+---
+# Base playbook for Amazon Linux
+- name: Base
+  user: ec2-user
+  sudo: True
+  tags: base
+  hosts: all
+  roles:
+    - base
+  vars_files:
+    - vars/$ansible_distribution.yml
+  

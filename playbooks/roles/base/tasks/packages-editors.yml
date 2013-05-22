@@ -1,0 +1,36 @@
+---
+# Install everyone's favorite editors
+
+- name: Install editor packages (apt version)
+  apt: pkg=$item state=latest
+  with_items:
+    - emacs23-nox
+    - emacs23-el
+    - vim
+  when_string: $ansible_distribution == 'Ubuntu'
+
+- name: Install editors packages (yum version)
+  yum: pkg=$item state=latest
+  with_items:
+    - emacs
+    - emacs-el
+    - vim-enhanced
+  when_string: $ansible_distribution == 'Amazon'
+    
+- name: Emacs cleaner script
+  copy: src=ec dest=/usr/bin/ec owner=root group=root mode=0755
+
+- name: Emacs settings file for new user skeleton
+  copy: src=emacs dest=/etc/skel/.emacs owner=root group=root mode=0444
+
+- name: Emacs settings file root
+  copy: src=emacs dest=/root/.emacs owner=root group=root mode=0400
+
+- name: Emacs settings file ec2-user
+  copy: src=emacs dest=/home/ec2-user/.emacs owner=ec2-user group=ec2-user mode=0400  
+  when_string: $ansible_distribution == 'Amazon'
+
+- name: Emacs settings file ubuntu user
+  copy: src=emacs dest=/home/ubuntu/.emacs owner=ubuntu group=ubuntu mode=0400  
+  when_string: $ansible_distribution == 'Ubuntu'
+ 

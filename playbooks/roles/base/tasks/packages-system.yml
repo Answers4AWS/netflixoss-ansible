@@ -1,0 +1,44 @@
+---
+# Install some helpful system packages
+
+- name: Install system packages (apt version)
+  apt: pkg=$item state=latest
+  with_items:
+    - git-core
+    - less
+    - perl
+    - perl-modules
+    - python
+    - python-support
+    - python-pip
+    - sudo
+    - sysstat
+    - unzip
+    - xfsprogs
+    - zip
+  when_string: $ansible_distribution == 'Ubuntu'
+
+- name: Install system packages (yum version)
+  yum: pkg=$item state=latest
+  with_items:
+    - git
+    - less
+    - perl
+    - python
+    - python-pip
+    - ruby-json
+    - sudo
+    - unzip
+    - xfsprogs
+    - zip
+  when_string: $ansible_distribution == 'Amazon'
+
+- name: Install boto Python library
+  pip: name=boto state=latest
+
+- name: Install AWS CLI
+  pip: name=awscli state=latest
+
+- name: Install s3get to be used by user-data on boot
+  copy: src=s3get dest=/usr/bin/s3get owner=root group=root mode=0755
+

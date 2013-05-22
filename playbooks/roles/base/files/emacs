@@ -1,0 +1,15 @@
+;; ===== Set standard indent to 4 ====
+(setq standard-indent 4)
+
+;; ========== Line by line scrolling ==========
+(setq scroll-step 1)
+
+;; ========== Enable Line and Column Numbering ==========
+(line-number-mode 1)
+(column-number-mode 1)
+
+;; ========== Colors ==========
+(global-font-lock-mode 1)
+
+;; Enable downcase with C-x C-l
+(put 'downcase-region 'disabled nil)

@@ -1,0 +1,16 @@
+---
+# Set up package repositories
+
+- name: Ensure APT sources list is includes multiverse
+  copy: src=$ansible_distribution/$ansible_distribution_release/sources.list dest=/etc/apt/sources.list owner=root group=root mode=0444
+  when_string: $ansible_distribution == 'Ubuntu'
+  
+- name: Patch cloud-init APT sources template
+  copy: src=$ansible_distribution/$ansible_distribution_release/sources.list.tmpl dest=/etc/cloud/templates/sources.list.tmpl owner=root group=root mode=0444
+  when_string: $ansible_distribution == 'Ubuntu'
+
+- name: Update APT repo
+  apt: update-cache=yes
+  when_string: $ansible_distribution == 'Ubuntu'
+
+  

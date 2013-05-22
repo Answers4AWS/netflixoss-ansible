@@ -1,0 +1,27 @@
+---
+# TASK: Install the security related packages and services
+
+- name: Install security packages (apt version)
+  apt: pkg=$item state=latest
+  with_items:
+    - fail2ban
+    - openssl
+  when_string: $ansible_distribution == 'Ubuntu'
+
+- name: Install security packages (yum version)
+  yum: pkg=$item state=latest enablerepo=epel
+  with_items:
+    - fail2ban
+  when_string: $ansible_distribution == 'Amazon'
+  
+- name: Enable fail2ban service
+  service: name=fail2ban enabled=yes
+
+- name: Starting fail2ban service
+  service: name=fail2ban state=started
+  only_if: 'not $ami_build'
+  
+- name: Stopping fail2ban service
+  service: name=fail2ban state=stopped
+  only_if: '$ami_build'
+  

@@ -1,0 +1,66 @@
+---
+# Install networking packages, and utilities
+
+- name: Install networking packages (apt version)
+  apt: pkg=$item state=latest
+  with_items:
+    - dnsutils
+    - lynx
+    - openssh-client
+    - openssh-server
+    - ngrep
+    - ntp
+    - rsync
+    - ssh
+    - tcpdump
+    - telnet
+    - traceroute
+  when_string: $ansible_distribution == 'Ubuntu'
+
+- name: Install networking packages  (yum version)
+  yum: pkg=$item state=latest enablerepo=epel
+  with_items:
+    - lynx
+    - openssh-clients
+    - openssh-server
+    - ngrep
+    - ntp
+    - rsync
+    - tcpdump
+    - telnet
+    - traceroute
+  when_string: $ansible_distribution == 'Amazon'
+    
+- name: Make sure rsync is not running as a service
+  service: name=rsync enabled=off
+  when_string: $ansible_distribution == 'Ubuntu'
+  
+- name: Enable NTP service
+  service: name=$ntp_service_name enabled=yes
+
+- name: Starting NTP
+  service: name=$ntp_service_name state=started
+  only_if: 'not $ami_build'
+
+- name: Stopping NTP
+  service: name=$ntp_service_name state=stopped
+  only_if: '$ami_build'
+  
+# SSH settings
+- name: Set SSH config
+  copy: src=$ansible_distribution/ssh_config dest=/etc/ssh/ssh_config owner=root mode=0440
+    
+- name: Set SSHd config
+  copy: src=$ansible_distribution/sshd_config dest=/etc/ssh/sshd_config owner=root mode=0440
+    
+- name: Enable SSH service
+  service: name=$ssh_service_name enabled=yes
+  
+- name: Starting SSH service
+  service: name=$ssh_service_name state=started
+  only_if: 'not $ami_build'
+  
+- name: Stopping SSH service
+  service: name=$ssh_service_name state=stopped
+  only_if: '$ami_build'
+  
