@@ -1,0 +1,16 @@
+---
+# Asgard role
+- name: Copy tomcat server.xml file
+  copy: src=server.xml dest=/usr/local/tomcat/conf/server.xml owner=root group=root mode=0644
+  notify:
+    - restart tomcat
+  
+- name: Remove default root webapp
+  file: path=/usr/local/tomcat/webapps/ROOT state=absent
+  
+- name: Create Asgard Home at /usr/share/tomcat7/.asgard
+  file: path=/usr/share/tomcat7/.asgard state=directory owner=$tomcat_user group=$tomcat_user mode=0755
+
+- name: Download snapshot build of Asgard from Cloudbees
+  get_url: url=https://netflixoss.ci.cloudbees.com/job/asgard-master/lastSuccessfulBuild/artifact/target/asgard.war dest=/usr/local/tomcat/webapps/asgard.war
+  

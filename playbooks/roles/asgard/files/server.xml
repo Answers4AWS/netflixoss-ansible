@@ -1,0 +1,27 @@
+<Server port="8005" shutdown="SHUTDOWN">
+  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+  <Listener className="org.apache.catalina.core.JasperListener" />
+  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
+  <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
+  <Service name="Catalina">
+    <Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000"
+               redirectPort="8443" />
+    <Engine name="Catalina" defaultHost="localhost">
+      <Host appBase="webapps" autoDeploy="false" deployOnStartup="false"
+            name="localhost" unpackWARs="true" xmlValidation="false"
+            xmlNamespaceAware="false">
+        <Context className="org.apache.catalina.core.StandardContext"
+                 cachingAllowed="true"
+                 charsetMapperClass="org.apache.catalina.util.CharsetMapper"
+                 cookies="true" crossContext="false" displayName="Welcome to Asgard"
+                 docBase="asgard.war" path="" privileged="false"
+                 reloadable="false" swallowOutput="false" useNaming="true"
+                 wrapperClass="org.apache.catalina.core.StandardWrapper">
+        </Context>
+        <Valve className="org.apache.catalina.valves.AccessLogValve" 
+               pattern="'%h %t &quot;%r&quot; %s %Dms %b"/>
+      </Host>
+    </Engine>
+  </Service>
+</Server>

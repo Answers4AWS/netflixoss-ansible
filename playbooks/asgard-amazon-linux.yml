@@ -8,7 +8,7 @@
   roles:
     - base
     - tomcat
-    #- asgard
+    - asgard
   vars_files:
     - vars/$ansible_distribution.yml
   

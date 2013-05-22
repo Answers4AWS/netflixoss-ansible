@@ -1,2 +1,3 @@
 ntp_service_name: ntpd
 ssh_service_name: sshd
+tomcat_user: tomcat

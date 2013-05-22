@@ -24,7 +24,7 @@
   when_string: $ansible_distribution == 'Amazon'
   
 - name: Fix webapps permissions so tomcat can deploy
-  file: dest=/usr/local/tomcat/webapps state=directory owner=tomcat7 group=tomcat7 mode=0775
+  file: dest=/usr/local/tomcat/webapps state=directory owner=$tomcat_user group=$tomcat_user mode=0775
   when_string: $ansible_distribution == 'Ubuntu'
 
 - name: Tomcat service config
@@ -34,7 +34,7 @@
   when_string: $ansible_distribution == 'Ubuntu'
 
 - name: Tomcat service config  
-  template: src=tomcat7.conf.j2 dest=/etc/tomcat7/tomcat7.conf owner=tomcat group=tomcat mode=644
+  template: src=tomcat7.conf.j2 dest=/etc/tomcat7/tomcat7.conf owner=$tomcat_user group=$tomcat_user mode=644
   notify:
     - restart tomcat 
   when_string: $ansible_distribution == 'Amazon'
