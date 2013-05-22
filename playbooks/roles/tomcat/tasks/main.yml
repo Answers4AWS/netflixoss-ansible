@@ -1,0 +1,53 @@
+---
+# Tomcat role
+- name: Install Apache Tomcat 7 (apt version)
+  apt: pkg=$item state=latest
+  with_items:
+    - tomcat7
+    - libtcnative-1
+    - libapr1
+  when_string: $ansible_distribution == 'Ubuntu'
+  
+- name: Install Apache Tomcat 7 (yum version)
+  yum: pkg=$item state=latest
+  with_items:
+    - tomcat7
+    - tomcat-native
+  when_string: $ansible_distribution == 'Amazon'
+    
+- name: Symlink to /usr/local/tomcat
+  file: dest=/usr/local/tomcat state=link src=/var/lib/tomcat7
+  when_string: $ansible_distribution == 'Ubuntu'
+  
+- name: Symlink to /usr/local/tomcat
+  file: dest=/usr/local/tomcat state=link src=/usr/share/tomcat7
+  when_string: $ansible_distribution == 'Amazon'
+  
+- name: Fix webapps permissions so tomcat can deploy
+  file: dest=/usr/local/tomcat/webapps state=directory owner=tomcat7 group=tomcat7 mode=0775
+  when_string: $ansible_distribution == 'Ubuntu'
+
+- name: Tomcat service config
+  template: src=default.j2 dest=/etc/default/tomcat7 owner=root group=root mode=0644
+  notify:
+    - restart tomcat 
+  when_string: $ansible_distribution == 'Ubuntu'
+
+- name: Tomcat service config  
+  template: src=tomcat7.conf.j2 dest=/etc/tomcat7/tomcat7.conf owner=tomcat group=tomcat mode=644
+  notify:
+    - restart tomcat 
+  when_string: $ansible_distribution == 'Amazon'
+
+- name: Starting tomcat7 service
+  service: name=tomcat7 state=started
+  only_if: 'not $ami_build'
+  
+- name: Stopping tomcat7 service
+  service: name=tomcat7 state=stopped
+  only_if: '$ami_build'
+  
+
+
+ 
+

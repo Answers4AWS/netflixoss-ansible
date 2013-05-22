@@ -1,0 +1,14 @@
+---
+# Asgard playbook for Amazon Linux
+- name: Asgard
+  user: ec2-user
+  sudo: True
+  tags: asgard
+  hosts: all
+  roles:
+    - base
+    - tomcat
+    #- asgard
+  vars_files:
+    - vars/$ansible_distribution.yml
+  

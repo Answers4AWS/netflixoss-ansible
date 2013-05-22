@@ -1,0 +1,13 @@
+---
+# Asgard playbook for ubuntu
+- name: Asgard
+  user: ubuntu
+  sudo: True
+  tags: asgard
+  hosts: all
+  roles:
+    - base
+    - tomcat
+    #- asgard
+  vars_files:
+    - vars/$ansible_distribution.yml
