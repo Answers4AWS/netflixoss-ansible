@@ -11,6 +11,13 @@
 - name: Create Asgard Home at /usr/share/tomcat7/.asgard
   file: path=/usr/share/tomcat7/.asgard state=directory owner=$tomcat_user group=$tomcat_user mode=0755
 
+- name: Copy local Asgard WAR file $local_war
+  copy: src=$local_war dest=/usr/local/tomcat/webapps/asgard.war
+  when_string: $local_war != ""
+  tags: deploy
+  
 - name: Download snapshot build of Asgard from Cloudbees
-  get_url: url=https://netflixoss.ci.cloudbees.com/job/asgard-master/lastSuccessfulBuild/artifact/target/asgard.war dest=/usr/local/tomcat/webapps/asgard.war
+  get_url: url=$latest_successful_build_url dest=/usr/local/tomcat/webapps/asgard.war
+  when_string: $local_war == ""
+  tags: deploy
   
