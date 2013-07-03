@@ -16,7 +16,6 @@ This project is a set of Ansible Playbooks to configure instances to run some of
 1. [Ansible installed](http://www.ansibleworks.com/docs/gettingstarted.html) on your laptop
 1. The [Ansible EC2 Inventory](http://www.ansibleworks.com/docs/api.html/#example-aws-ec2-external-inventory-script) configured
 1. Clone this repository
-1. Launch a shiny new EC2 instance that you can SSH into
 
 ## Features
 
@@ -45,12 +44,16 @@ The base configuration is gets a system ready for production. You can find the [
 1. Create an Asgard security group
  - Allow port 22 for SSH
  - Allow port 8080 for HTTP
-1. If you don't already, create a new Key pair
+1. If you don't already, create a new Key pair, and add it to your keychain or SSH agent so you don't need to specify it later:
+```
+$ ssh-add mykey.pem
+```
 1. Launch a new EC2 instance using the above Security Group and key pair
 1. Set the `Name` tag of the instance to `Asgard`
 1. Confirm you can see the instance using the Ansible EC2 inventory
-
-/etc/ansible/hosts | grep 'Asgard'
+```
+$ /etc/ansible/hosts | grep 'Asgard'
+```
 
 Now you can run the playbook
 
@@ -64,9 +67,16 @@ This will configure the instance to be running the [latest snapshot build](https
 $ ansible-playbook playbooks/asgard-ubuntu.yml -l 'tag_Name_Asgard' -e "local_war=$HOME/Downloads/asgard.war"
 ```
 
-Once the playbook finished, you can access Asgard on port 8080 on the instance. Example
+Once the playbook finished, you will have Asgard running inside Tomcat on your EC2 instance. You can access Asgard on port 8080. Example:
 
 ```
 http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com:8080/asgard/
 ```
 
+## Feedback
+
+If you have feedback, comments or suggestions, please feel free to contact Peter at AWS Answers, create an Issue, or submit a pull request.
+
+## About AWS Answers
+
+These playbooks were written by [Peter Sankauskas](https://twitter.com/pas256), founder of [AWS Answers](http://awsanswers.com/) - a consulting company focused on helping business get the most out of AWS. If you are looking for help with AWS, please [contact us](http://awsanswers.com/contact/). 
