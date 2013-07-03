@@ -4,7 +4,7 @@
   copy: src=server.xml dest=/usr/local/tomcat/conf/server.xml owner=root group=root mode=0644
   notify:
     - restart tomcat
-  
+
 - name: Remove default root webapp
   file: path=/usr/local/tomcat/webapps/ROOT state=absent
   
