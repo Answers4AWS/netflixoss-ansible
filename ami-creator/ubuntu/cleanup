@@ -1,0 +1,64 @@
+#!/bin/bash
+# Copyright 2013 AWS Answers LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Cleans up, or at least attempts to, everything left over when creating an AMI
+# Use this script after a failed or incorrectly built AMI too
+
+# Include helper functions and variables
+. _include.sh
+
+if [ -d $imagedir ]; then
+	echo "Removing $imagedir"
+	
+	if [ -d $imagedir/proc ]; then
+		sudo chroot $imagedir umount /proc
+	fi
+	sudo umount $imagedir
+fi
+
+if [ -d $ebsimagedir ]; then
+	echo "Removing $ebsimagedir"
+	sudo umount $ebsimagedir/dev
+	sudo chroot $ebsimagedir umount /proc
+	sudo chroot $ebsimagedir umount /dev/pts
+	sudo umount $ebsimagedir
+fi
+
+echo "Removing /mnt/$codename-cloudimg-*"
+sudo rm -rf /mnt/$codename-cloudimg-*
+	
+echo "Removing /mnt/$codename-server-cloudimg-amd64.edit.img"
+sudo rm -rf /mnt/$codename-server-cloudimg-amd64.edit.img
+
+if [ -f /tmp/image.volume.id ]; then
+	VOL_ID=`cat /tmp/image.volume.id`
+	
+	echo "Detaching $VOL_ID"
+	detached=`ec2-detach-volume --region $region $VOL_ID 2>&1`
+	
+	volNotExists=`echo $detached | grep "does not exist"`
+	if [ "$volNotExists" == "" ]; then
+		sleep 5
+		echo "Deleting $VOL_ID"
+		ec2-delete-volume --region $region $VOL_ID		
+	fi
+	
+	rm /tmp/image.volume.id
+fi
+
+if [ "$1" = "--full" ]; then
+	echo "Removing downloaded Ubuntu image as well"
+	sudo rm -f /mnt/$codename-server-* /mnt/README.files
+fi

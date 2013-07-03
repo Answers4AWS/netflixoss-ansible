@@ -1,0 +1,54 @@
+#!/bin/bash
+# Copyright 2013 AWS Answers LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This script will bootstrap an EC2 instance running Ubuntu with the files
+# necessary to create NetflixOSS AMIs using Ansible.
+# Run this locally before running other scripts
+#
+
+# Halt execution on failure
+set -e
+
+# Make sure directory is correct since we depend on relative dirs
+if [ ! -f bootstrap-ami-creator ] ; then
+    echo "ERROR: Please run this script from the directory it is located in"
+    echo "Suggestion: cd netflixoss-ansible/ami-creator/ubuntu"
+    exit 1
+fi
+
+# Display usage information
+function usage {
+    echo "Usage: bootstrap-ami-creator INSTANCE"
+    echo "Example: ./bootstrap-ami-creator ec2-12-12-12-12.compute-1.amazonaws.com"
+}
+
+# CLI arguments sanity check
+if [ $# -ne 1 ] ; then
+    usage
+    exit 2
+fi
+
+INSTANCE=$1
+
+# Now go do work
+echo "Copying scripts and files to ${INSTANCE}..."
+rsync -avz --exclude=.git --exclude-from=../../.gitignore --exclude=.gitignore \
+ ../../ ubuntu@${INSTANCE}:
+
+echo
+echo "DONE"
+echo "You can now SSH to ${INSTANCE} and run create AMIs"
+
+

@@ -1,0 +1,187 @@
+#!/bin/bash
+# Copyright 2013 AWS Answers LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Final step finished the AMI creation process
+#
+# This expects to run on an EC2 instance
+#
+# Code adapted from: alestic-git
+
+# Include helper functions and variables
+. _include.sh
+
+echo "-- Create AMI --"
+echo "Creating AMI: $name"
+read -e -p "Value for Name Tag for this AMI: " -i "${brand^}" tag_name
+echo "Will tag with: $tag_name"
+echo
+
+# Clean up chroot environment
+echo "Cleaning up chroot environment"
+sudo chroot $ebsimagedir umount /proc
+#sudo chroot $ebsimagedir umount /dev/pts
+sudo umount $ebsimagedir/dev
+sudo rm -f $ebsimagedir/usr/sbin/policy-rc.d
+sudo rm -rf $ebsimagedir/home/ambot/devops
+sudo rm -rf $ebsimagedir/home/ambot/.ansible $ebsimagedir/home/ambot/.ansible_async
+sudo rm -f $ebsimagedir/home/ambot/.bash_history
+
+export EC2_URL=http://ec2.$region.amazonaws.com
+
+volumeid=`cat /tmp/image.volume.id`
+
+echo "Unmounting EBS Volume"
+sudo umount $ebsimagedir
+
+echo "Detaching EBS volume"
+ec2-detach-volume --region $region "$volumeid"
+while ec2-describe-volumes --region $region "$volumeid" | grep -q ATTACHMENT
+  do
+  	echo -n "."
+  	sleep 3
+done
+echo
+
+echo "Creating a snapshot of the EBS volume"
+snapshotid=$(ec2-create-snapshot --region $region --description "$name" "$volumeid" | cut -f2)
+while ec2-describe-snapshots --region $region "$snapshotid" | grep -q pending
+  do
+  	echo -n "."
+  	sleep 3
+done
+echo
+
+echo "Register the snapshot as AMI"
+# Register the snapshot as a new AMI
+amiid=$(ec2-register                              \
+  --name "$name"                                  \
+  --description "$description"                    \
+  --architecture "$arch"                          \
+  --kernel "$akiid"                               \
+  --block-device-mapping $ephemeraldev=ephemeral0 \
+  --region $region                                \
+  --snapshot "$snapshotid" |
+  cut -f2)
+
+echo "Deleting EBS volume"
+ec2-delete-volume --region $region "$volumeid"
+
+
+# Copy snapshot to other 2 regions, and register AMI there too
+case "$region" in
+	us-east-1)
+		region1='us-west-1'
+		region2='us-west-2'
+		;;
+	us-west-1)
+		region1='us-east-1'
+		region2='us-west-2'
+		;;
+	us-west-2)
+		region1='us-east-1'
+		region2='us-west-1'
+		;;
+	*)
+		echo "ERROR: Unknown region"
+		exit 1
+esac
+echo
+
+if [ $copy_ami -eq 1 ]; then
+	echo "Coping snapshot to $region1"
+	snapshot1id=$(ec2-copy-snapshot -r $region -s $snapshotid --region $region1 -d "$description" | cut -f2)
+	while ec2-describe-snapshots --region $region1 "$snapshot1id" | grep -q pending
+	  do
+	  	echo -n "."
+	  	sleep 3
+	done
+	echo
+	
+	echo "Registering AMI in $region1"
+	akiid1=$(get_akiid $region1)
+	amiid1=$(ec2-register                              \
+  --name "$name"                                  \
+  --description "$description"                    \
+  --architecture "$arch"                          \
+  --kernel "$akiid1"                               \
+  --block-device-mapping $ephemeraldev=ephemeral0 \
+  --region $region1                                \
+  --snapshot "$snapshot1id" |
+	  cut -f2)
+	echo
+	
+	echo "Coping snapshot to $region2"
+	snapshot2id=$(ec2-copy-snapshot -r $region -s $snapshotid --region $region2 -d "$description" | cut -f2)
+	while ec2-describe-snapshots --region $region2 "$snapshot2id" | grep -q pending
+	  do
+	  	echo -n "."
+	  	sleep 3
+	done
+	echo
+	
+	echo "Registering AMI in $region2"
+	akiid2=$(get_akiid $region2)
+	amiid2=$(ec2-register                              \
+  --name "$name"                                  \
+  --description "$description"                    \
+  --architecture "$arch"                          \
+  --kernel "$akiid2"                               \
+  --block-device-mapping $ephemeraldev=ephemeral0 \
+  --region $region2                                \
+  --snapshot "$snapshot2id" |
+	  cut -f2)
+fi
+
+echo "Tagging snapshots"
+ec2-create-tags --region $region $snapshotid --tag Name="$tag_name AMI"
+if [ $copy_ami -eq 1 ]; then
+	ec2-create-tags --region $region1 $snapshot1id --tag Name="$tag_name AMI"
+	ec2-create-tags --region $region2 $snapshot2id --tag Name="$tag_name AMI"
+fi
+echo
+
+echo "Tagging AMIs"
+ec2-create-tags --region $region $amiid --tag Name="$tag_name"
+if [ $copy_ami -eq 1 ]; then
+	ec2-create-tags --region $region1 $amiid1 --tag Name="$tag_name"
+	ec2-create-tags --region $region2 $amiid2 --tag Name="$tag_name"
+fi
+echo
+
+
+cat <<EOF
+AMI: $amiid $codename $region $arch2
+AMI: $amiid1 $codename $region1 $arch2
+AMI: $amiid2 $codename $region2 $arch2
+
+ami id:       $amiid
+aki id:       $akiid
+region:       $region ($zone)
+architecture: $arch ($arch2)
+os:           Ubuntu $release $codename
+name:         $name
+description:  $description
+EBS volume:   $volumeid (deleted)
+EBS snapshot: $snapshotid
+
+Test the new AMI using something like:
+
+  export EC2_URL=http://ec2.$region.amazonaws.com
+  ec2-run-instances \\
+    --key \$USER \\
+    --instance-type t1.micro \\
+    $amiid
+
+EOF

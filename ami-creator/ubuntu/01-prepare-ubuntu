@@ -1,0 +1,189 @@
+#!/bin/bash
+# Copyright 2013 AWS Answers LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Prepares an Ubuntu instance to create AMIs
+#
+# This expects to run on an EC2 instance
+#
+# Code adapted from: alestic-git
+
+# Include helper functions and variables
+. _include.sh
+
+echo "-- Prepare AMI creation --"
+echo "Ubuntu version: $release $codename"
+#read -e -p "What size image would you like (Gb): " -i "$size" size
+echo "Creating image size: $size Gb"
+echo
+
+########################################
+# Host updates below
+########################################
+
+echo "Updating and installing packages needed to build the AMI"
+
+# Update and install Ubuntu packages
+export DEBIAN_FRONTEND=noninteractive
+sudo perl -pi -e 's/^# *(deb .*multiverse)$/$1/' /etc/apt/sources.list
+sudo apt-get update
+sudo -E apt-get upgrade -y
+sudo -E apt-get install --no-install-recommends -y \
+ ec2-ami-tools            \
+ ec2-api-tools            \
+ git-core                 \
+ xfsprogs
+
+# This is here because we need ec2-copy-snapshot
+if [ ! -e ec2-api-tools_1.6.6.0-0ubuntu1_all.deb ]; then
+	wget http://mirrors.us.kernel.org/ubuntu/pool/multiverse/e/ec2-api-tools/ec2-api-tools_1.6.6.0-0ubuntu1_all.deb
+fi
+sudo dpkg -i ec2-api-tools_1.6.6.0-0ubuntu1_all.deb
+
+# Download base Ubuntu server image built by Canonical
+image=/mnt/$imagename.img
+imagedir=/mnt/$codename-cloudimg-$arch2
+if [ ! -e $image ]; then
+    echo "Downloading Ubuntu Image"
+    wget -qO- $imageurl |
+      sudo tar xzf - -C /mnt
+fi
+
+echo "Mounting Ubunutu image"
+sudo mkdir -p $imagedir
+sudo cp $image $thisImage
+sudo mount -o loop $thisImage $imagedir
+
+
+
+########################################
+# Begin AMI modifications below
+########################################
+
+echo "Allow network access from chroot environment"
+sudo rm -f $imagedir/etc/resolv.conf
+sudo cp -f /etc/resolv.conf $imagedir/etc/
+
+echo "Configuring chroot environment to work like a booted OS"
+sudo chroot $imagedir mount -t proc none /proc
+#sudo chroot $imagedir mount -t devpts none /dev/pts
+cat <<EOF | sudo tee $imagedir/usr/sbin/policy-rc.d > /dev/null
+#!/bin/sh
+exit 101
+EOF
+sudo chmod 755 $imagedir/usr/sbin/policy-rc.d
+DEBIAN_FRONTEND=noninteractive
+
+echo
+echo "Enabling multiverse repo"
+sudo perl -pi -e 's/^# *(deb .*multiverse)$/$1/' \
+  $imagedir/etc/apt/sources.list                 \
+  $imagedir/etc/cloud/templates/sources.list.tmpl
+
+echo "Adding locale"
+sudo -E chroot $imagedir locale-gen en_US.UTF-8
+
+# Upgrade and install packages on the target file system
+echo
+echo "Updating and upgrading image"
+sudo chroot $imagedir apt-get update
+sudo -E chroot $imagedir apt-get dist-upgrade -y
+
+echo "Installing new software on image"
+# Install software
+sudo -E chroot $imagedir                      \
+  apt-get install --no-install-recommends -y  \
+    coreutils                                 \
+    git-core                                  \
+    libapt-pkg4.12                            \
+    make                                      \
+    python-support                            \
+    python-jinja2                             \
+    xfsprogs                                  
+
+
+# Use XFS for the target root file system because it is better than ext4
+echo "Setting XFS config"
+sudo perl -pi -e 's/ext4/xfs/' $imagedir/etc/fstab
+sudo perl -pi -e 's/cloudimg/uec/' $imagedir/etc/fstab
+sudo perl -pi -e 's/cloudimg/uec/' $imagedir/boot/grub/menu.lst
+
+echo "Creating EBS volume for image"
+# Create and mount temporary EBS volume with file system to hold new AMI image
+volumeid=$(ec2-create-volume --region $region --size $size --availability-zone $zone |
+  cut -f2)
+if [ "$volumeid" = "" ]; then
+  echo "ERROR: Could not create EBS volume using 'ec2-create-volume'"
+  echo "Make sure this EC2 instance is in a Role that has permission to create EBS volumes"
+  exit 1
+fi
+echo "$volumeid" > /tmp/image.volume.id
+instanceid=$(wget -qO- http://169.254.169.254/latest/meta-data/instance-id)
+ec2-attach-volume --region $region --device /dev/sdi --instance "$instanceid" "$volumeid"
+dev=/dev/xvdi
+while [ ! -e $dev ]
+  do
+  	echo -n "."
+  	sleep 3
+done
+echo " Done"
+  
+echo "Creating filesystem on EBS volume"
+sudo mkfs.xfs -L uec-rootfs $dev
+sudo mkdir $ebsimagedir
+sudo mount $dev $ebsimagedir
+
+# Copy file system from temporary rootdir to EBS volume
+echo "Copying files from image to EBS volume"
+sudo rsync -axHAX $imagedir/ $ebsimagedir/
+
+echo "Unmounting image"
+sudo chroot $imagedir umount /proc
+sudo umount $imagedir
+sudo rm -f $thisImage
+
+
+### Now only working on EBS volume
+
+
+echo "Mounting /proc and /dev/pts"
+#sudo chroot $ebsimagedir rm -rf /dev/*
+sudo chroot $ebsimagedir mount -t proc none /proc
+sudo mount -o bind /dev $ebsimagedir/dev
+#sudo chroot $ebsimagedir mkdir -p -v /dev/pts
+#sudo chroot $ebsimagedir chmod 755 /dev/pts
+#sudo chroot $ebsimagedir mount -t devpts none /dev/pts
+#sudo chroot $ebsimagedir mknod -m 666 /dev/null c 1 3
+
+echo
+echo "Installing Ansible"
+sudo -E chroot $ebsimagedir add-apt-repository -y ppa:rquillo/ansible
+sudo -E chroot $ebsimagedir apt-get update
+sudo -E chroot $ebsimagedir apt-get install ansible
+
+echo
+echo "Copy over NetflixOSS-Ansible playbooks"
+sudo mkdir -p $ebsimagedir/$noss_ansible_dir
+sudo rsync -a ../../playbooks/ $ebsimagedir/$playbooks_dir/
+sudo rsync -a ../../inventory/ $ebsimagedir/$inventory_dir/
+
+echo
+echo "DONE"
+echo
+echo "Image location: $ebsimagedir"
+echo "To do stuff to the image:"
+echo "sudo -E chroot $ebsimagedir sudo su"
+echo
+
+
