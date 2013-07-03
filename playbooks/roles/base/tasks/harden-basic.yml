@@ -8,7 +8,6 @@
     - gnats
     - irc
     - list
-    - lp
     - news
     - proxy
     - uucp
@@ -18,6 +17,7 @@
   with_items:
     - daemon
     - bin
+    - lp
     - sys
     - man
     - mail
