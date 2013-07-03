@@ -4,33 +4,69 @@
 
 This project is a set of Ansible Playbooks to configure instances to run some of the [NetflixOSS](http://netflix.github.io/) projects.
 
-- [Asgard](#Asgard)
+- [Asgard](#asgard)
 - Aminator (coming soon)
 - Edda (coming soon)
 - Eureka (coming soon)
 - Ice (coming soon)
 - Simian Army (coming soon)
 
+## Prerequisites
+
+1. [Ansible installed](http://www.ansibleworks.com/docs/gettingstarted.html) on your laptop
+1. The [Ansible EC2 Inventory](http://www.ansibleworks.com/docs/api.html/#example-aws-ec2-external-inventory-script) configured
+1. Clone this repository
+1. Launch a shiny new EC2 instance that you can SSH into
+
 ## Features
 
-These playbooks are built to be run on:
+These playbooks are built to be run on the following operating systems:
 - Ubuntu 12.04 LTS
-- Amazon Linux.
+- Amazon Linux
 
 They have also been written in a way where you can use the same playbook to configure a running server, or build a custom AMI.
 
 ### Base configuration
 
-The base configuration is gets a system ready for production. You can find the [base tasks here](#), but in summary it:
+The base configuration is gets a system ready for production. You can find the [base tasks here](https://github.com/awsanswers/noss-ansible/tree/master/playbooks/roles/base/tasks), but in summary it:
 - installs some packages
--- Python with the latest Boto
--- AWS CLI
--- security packages including fail2ban
--- Emacs and Vim (no religion here)
+ - Python with the latest Boto
+ - AWS CLI
+ - security packages including fail2ban
+ - Emacs and Vim (no religion here)
 - does some basic system hardening
 
 ## Projects
 
 ### Asgard
 
-[Asgard](https://github.com/Netflix/asgard) is an application deployments and cloud management web interface for AWS. To run the playbook, 
+[Asgard](https://github.com/Netflix/asgard) is an application deployments and cloud management web interface for AWS. Before running the playbook, there are a few things we need to do:
+
+1. Create an Asgard security group
+ - Allow port 22 for SSH
+ - Allow port 8080 for HTTP
+1. If you don't already, create a new Key pair
+1. Launch a new EC2 instance using the above Security Group and key pair
+1. Set the `Name` tag of the instance to `Asgard`
+1. Confirm you can see the instance using the Ansible EC2 inventory
+
+/etc/ansible/hosts | grep 'Asgard'
+
+Now you can run the playbook
+
+```
+$ ansible-playbook playbooks/asgard-ubuntu.yml -l 'tag_Name_Asgard'
+```
+
+This will configure the instance to be running the [latest snapshot build](https://netflixoss.ci.cloudbees.com/job/asgard-master/lastSuccessfulBuild/artifact/target/) of Asgard. If you prefer to run the stable version of Asgard, you want to build the WAR file yourself, just specify the path to the WAR file:
+
+```
+$ ansible-playbook playbooks/asgard-ubuntu.yml -l 'tag_Name_Asgard' -e "local_war=$HOME/Downloads/asgard.war"
+```
+
+Once the playbook finished, you can access Asgard on port 8080 on the instance. Example
+
+```
+http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com:8080/asgard/
+```
+
