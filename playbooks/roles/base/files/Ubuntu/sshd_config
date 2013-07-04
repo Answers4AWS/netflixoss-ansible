@@ -25,7 +25,7 @@ SyslogFacility AUTH
 LogLevel INFO
 
 # Authentication:
-LoginGraceTime 10
+LoginGraceTime 30
 PermitRootLogin no
 StrictModes yes
 
@@ -86,7 +86,7 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 # If you just want the PAM account and session checks to run without
 # PAM authentication, then enable this but set PasswordAuthentication
 # and ChallengeResponseAuthentication to 'no'.
-UsePAM no
+UsePAM yes
 
 # Disable reverse DNS lookup to make SSH start faster
 UseDNS no
