@@ -7,7 +7,7 @@ This project is a set of Ansible Playbooks to configure instances to run some of
 - [Asgard](#asgard)
 - Aminator (coming soon)
 - Edda (coming soon)
-- Eureka (coming soon)
+- [Eureka](#eureka)
 - Ice (coming soon)
 - Simian Army (coming soon)
 
@@ -43,12 +43,12 @@ The base configuration is gets a system ready for production. You can find the [
 
 1. Create an Asgard security group
  - Allow port 22 for SSH
- - Allow port 8080 for HTTP
+ - Allow port 80 for HTTP
 1. If you don't already, create a new Key pair, and add it to your keychain or SSH agent so you don't need to specify it later:
 ```
 $ ssh-add mykey.pem
 ```
-1. Launch a new EC2 instance using the above Security Group and key pair
+1. Launch a new EC2 instance using the above Security Group and key pair. Use Ubuntu 12.04 LTS as the AMI.
 1. Set the `Name` tag of the instance to `Asgard`
 1. Confirm you can see the instance using the Ansible EC2 inventory
 ```
@@ -67,10 +67,46 @@ This will configure the instance to be running the [latest snapshot build](https
 $ ansible-playbook playbooks/asgard-ubuntu.yml -l 'tag_Name_Asgard' -e "local_war=$HOME/Downloads/asgard.war"
 ```
 
-Once the playbook finished, you will have Asgard running inside Tomcat on your EC2 instance. You can access Asgard on port 8080. Example:
+Once the playbook is finished, you will have Asgard running inside Tomcat on your EC2 instance. You can access Asgard via HTTP as the ROOT application (no directory). Example:
 
 ```
-http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com:8080/asgard/
+http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com/
+```
+
+### Eureka
+
+[Eureka](https://github.com/Netflix/eureka) is a service registry for resilient mid-tier load balancing and failover. Before running the playbook, there are a few things we need to do:
+
+1. Create a Eureka security group
+ - Allow port 22 for SSH
+ - Allow port 80 for HTTP
+1. If you don't already, create a new Key pair, and add it to your keychain or SSH agent so you don't need to specify it later:
+```
+$ ssh-add mykey.pem
+```
+1. Launch a new EC2 instance using the above Security Group and key pair. This time, we will use Amazon Linux.
+1. Set the `Name` tag of the instance to `Eureka`
+1. Confirm you can see the instance using the Ansible EC2 inventory
+```
+$ /etc/ansible/hosts | grep 'Eureka'
+```
+
+Now you can run the playbook
+
+```
+$ ansible-playbook playbooks/eureka-amazon-linux.yml -l 'tag_Name_Eureka'
+```
+
+This will configure the instance to be running the [latest snapshot build](https://netflixoss.ci.cloudbees.com/job/eureka-master/lastSuccessfulBuild/artifact/eureka-server/build/libs/eureka-server-1.1.98.war) of Eureka. If you prefer to build your own WAR file yourself, just specify the path to the WAR file:
+
+```
+$ ansible-playbook playbooks/eureka-amazon-linux.yml -l 'tag_Name_Eureka' -e "local_war=$HOME/Downloads/eureka-server.war"
+```
+
+Once the playbook is finished, you will have Eureka Server running inside Tomcat on your EC2 instance. You can access it via HTTP. Example:
+
+```
+http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com/eureka/
 ```
 
 ## Feedback
