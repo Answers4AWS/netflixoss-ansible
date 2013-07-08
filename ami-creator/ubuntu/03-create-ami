@@ -160,6 +160,13 @@ if [ $copy_ami -eq 1 ]; then
 fi
 echo
 
+echo "Make AMIs public"
+ec2-modify-image-attribute --region $region -l -a all $amiid
+if [ $copy_ami -eq 1 ]; then
+	ec2-modify-image-attribute --region $region1 -l -a all $amiid1
+	ec2-modify-image-attribute --region $region2 -l -a all $amiid2
+fi
+echo
 
 cat <<EOF
 AMI: $amiid $codename $region $arch2
