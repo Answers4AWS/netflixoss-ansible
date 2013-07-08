@@ -1,3 +1,4 @@
 ntp_service_name: ntp
 ssh_service_name: ssh
 tomcat_user: tomcat7
+rc_local_path: /etc/rc.local

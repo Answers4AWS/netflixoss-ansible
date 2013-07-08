@@ -29,16 +29,19 @@
 
 - name: Tomcat service config
   template: src=default.j2 dest=/etc/default/tomcat7 owner=root group=root mode=0644
-  notify:
-    - restart tomcat 
+  notify: restart tomcat
   when_string: $ansible_distribution == 'Ubuntu'
 
 - name: Tomcat service config  
   template: src=tomcat7.conf.j2 dest=/etc/tomcat7/tomcat7.conf owner=$tomcat_user group=$tomcat_user mode=644
-  notify:
-    - restart tomcat 
+  notify: restart tomcat
   when_string: $ansible_distribution == 'Amazon'
 
+- name: Forward port 80 to 8080 using rc.local
+  copy: src=${ansible_distribution}-rc.local dest=$rc_local_path owner=root group=root mode=0755
+  notify: run rc.local
+  tags: rc
+  
 - name: Starting tomcat7 service
   service: name=tomcat7 state=started
   only_if: 'not $ami_build'

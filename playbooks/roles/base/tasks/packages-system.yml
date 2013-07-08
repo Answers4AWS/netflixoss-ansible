@@ -42,3 +42,8 @@
 - name: Install s3get to be used by user-data on boot
   copy: src=s3get dest=/usr/bin/s3get owner=root group=root mode=0755
 
+# Get the super handy ec2metadata script over tehre
+- name: Copy ec2metadata script
+  copy: src=$ansible_distribution/ec2metadata dest=/usr/bin/ec2metadata owner=root group=root mode=0755
+  when_string: $ansible_distribution == 'Amazon'
+  tags: ec2metadata
