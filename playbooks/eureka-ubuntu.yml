@@ -1,0 +1,15 @@
+---
+# Eureka playbook for ubuntu
+- name: Eureka
+  user: ubuntu
+  sudo: True
+  tags: eureka
+  hosts: all
+  roles:
+    - base
+    - tomcat
+    - eureka
+  vars:
+    local_war: "" 
+  vars_files:
+    - vars/$ansible_distribution.yml

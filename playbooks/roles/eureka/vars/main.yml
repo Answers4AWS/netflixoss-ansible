@@ -1,0 +1,3 @@
+---
+ami_build: "'$ami' == 'yes'"
+latest_successful_build_url: https://netflixoss.ci.cloudbees.com/job/eureka-master/lastSuccessfulBuild/artifact/eureka-server/build/libs/eureka-server-1.1.98.war

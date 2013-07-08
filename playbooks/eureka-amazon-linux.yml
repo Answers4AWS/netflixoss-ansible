@@ -1,0 +1,16 @@
+---
+# Eureka playbook for Amazon Linux
+- name: Eureka
+  user: ec2-user
+  sudo: True
+  tags: eureka
+  hosts: all
+  roles:
+    - base
+    - tomcat
+    - eureka
+  vars:
+    local_war: "" 
+  vars_files:
+    - vars/$ansible_distribution.yml
+  
