@@ -42,8 +42,20 @@
 - name: Install s3get to be used by user-data on boot
   copy: src=s3get dest=/usr/bin/s3get owner=root group=root mode=0755
 
-# Get the super handy ec2metadata script over tehre
+# Get the super handy ec2metadata script over there
 - name: Copy ec2metadata script
   copy: src=$ansible_distribution/ec2metadata dest=/usr/bin/ec2metadata owner=root group=root mode=0755
   when_string: $ansible_distribution == 'Amazon'
   tags: ec2metadata
+
+- name: Copy rc.local template
+  copy: src=${ansible_distribution}/rc.local dest=$rc_local_path owner=root group=root mode=0755
+
+- name: Copy over AMI analytics script
+  copy: src=abl.py dest=/usr/bin/abl.py owner=root group=root mode=0755
+  only_if: '$ami_build'
+
+- name: Add AMI analytics to rc.local
+  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" line='/usr/bin/abl.py'
+  only_if: '$ami_build'
+  

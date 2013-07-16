@@ -37,10 +37,18 @@
   notify: restart tomcat
   when_string: $ansible_distribution == 'Amazon'
 
-- name: Forward port 80 to 8080 using rc.local
-  copy: src=${ansible_distribution}-rc.local dest=$rc_local_path owner=root group=root mode=0755
+- name: Add port forwarding rules to rc.local 1of4
+  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" line='echo "Forwarding port 8080 to 80 for Tomcat"'
   notify: run rc.local
-  tags: rc
+- name: Add port forwarding rules to rc.local 2of4
+  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" line='iptables -t nat -A OUTPUT     -d localhost                  -p tcp --dport 80 -j REDIRECT --to-ports 8080'
+  notify: run rc.local
+- name: Add port forwarding rules to rc.local 3of4
+  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" line='iptables -t nat -A OUTPUT     -d `ec2metadata --local-ipv4` -p tcp --dport 80 -j REDIRECT --to-ports 8080'
+  notify: run rc.local
+- name: Add port forwarding rules to rc.local 4of4
+  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" line='iptables -t nat -A PREROUTING -d `ec2metadata --local-ipv4` -p tcp --dport 80 -j REDIRECT --to-ports 8080'
+  notify: run rc.local
   
 - name: Starting tomcat7 service
   service: name=tomcat7 state=started

@@ -1,0 +1,5 @@
+---
+- name: run rc.local
+  command: /etc/rc.local
+  only_if: 'not $ami_build'
+    
