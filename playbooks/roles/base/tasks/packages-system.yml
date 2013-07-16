@@ -56,6 +56,6 @@
   only_if: '$ami_build'
 
 - name: Add AMI analytics to rc.local
-  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" line='/usr/bin/abl.py'
+  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" regexp="abl\.py" line='/usr/bin/abl.py'
   only_if: '$ami_build'
   

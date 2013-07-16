@@ -17,7 +17,7 @@
     - traceroute
   when_string: $ansible_distribution == 'Ubuntu'
 
-- name: Install networking packages  (yum version)
+- name: Install networking packages (yum version)
   yum: pkg=$item state=latest enablerepo=epel
   with_items:
     - lynx
