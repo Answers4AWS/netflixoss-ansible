@@ -1,0 +1,31 @@
+---
+# MongoDB role
+- name: Install MongoDB (apt version)
+  apt: pkg=$item state=latest
+  with_items:
+    - mongodb
+  when_string: $ansible_distribution == 'Ubuntu'
+  tags: mongodb
+  
+- name: Install MongoDB (yum version)
+  yum: pkg=$item state=latest enablerepo=epel
+  with_items:
+    - mongodb
+    - mongodb-server
+  when_string: $ansible_distribution == 'Amazon'
+  tags: mongodb
+  
+- name: Starting MongoDB service
+  service: name=$mongodb_service_name state=started
+  only_if: 'not $ami_build'
+  tags: mongodb
+  
+- name: Stopping MongoDB service
+  service: name=$mongodb_service_name state=stopped
+  only_if: '$ami_build'
+  tags: mongodb
+  
+
+
+ 
+

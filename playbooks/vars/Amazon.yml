@@ -1,4 +1,5 @@
 ntp_service_name: ntpd
 ssh_service_name: sshd
+mongodb_service_name: mongod
 tomcat_user: tomcat
 rc_local_path: /etc/rc.d/rc.local

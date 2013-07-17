@@ -1,5 +1,1 @@
 ---
-- name: restart tomcat
-  service: name=tomcat7 state=restarted
-  only_if: 'not $ami_build'
-  

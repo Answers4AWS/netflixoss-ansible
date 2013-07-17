@@ -1,0 +1,12 @@
+---
+# Edda role
+- name: Copy local Edda WAR file $local_war
+  copy: src=$local_war dest=/usr/local/tomcat/webapps/edda.war
+  when_string: $local_war != ""
+  tags: deploy
+  
+- name: Download snapshot build of Edda from Cloudbees
+  get_url: url=$latest_successful_build_url dest=/usr/local/tomcat/webapps/edda.war
+  when_string: $local_war == ""
+  tags: deploy
+  

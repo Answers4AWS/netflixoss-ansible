@@ -1,0 +1,16 @@
+---
+# Edda playbook for ubuntu
+- name: Edda
+  user: ubuntu
+  sudo: True
+  tags: edda
+  hosts: all
+  roles:
+    - base
+    - tomcat
+    - mongodb
+    - edda
+  vars:
+    local_war: "" 
+  vars_files:
+    - vars/$ansible_distribution.yml
