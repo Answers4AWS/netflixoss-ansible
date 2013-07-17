@@ -131,15 +131,15 @@ $ /etc/ansible/hosts --refresh-cache | grep 'Edda'
 Now you can run the playbook
 
 ```
-$ ansible-playbook playbooks/edda-amazon-linux.yml -l 'tag_Name_Eureka'
+$ ansible-playbook playbooks/edda-amazon-linux.yml -l 'tag_Name_Edda'
  or
-$ ansible-playbook playbooks/edda-ubuntu.yml -l 'tag_Name_Eureka'
+$ ansible-playbook playbooks/edda-ubuntu.yml -l 'tag_Name_Edda'
 ```
 
 This will configure the instance to be running the [latest snapshot build](https://netflixoss.ci.cloudbees.com/job/edda-master/lastSuccessfulBuild/artifact/build/libs/edda-2.1-SNAPSHOT.war) of Edda. If you prefer to build your own WAR file yourself, just specify the path to the WAR file:
 
 ```
-$ ansible-playbook playbooks/edda-amazon-linux.yml -l 'tag_Name_Eureka' -e "local_war=$HOME/Downloads/edda.war"
+$ ansible-playbook playbooks/edda-amazon-linux.yml -l 'tag_Name_Edda' -e "local_war=$HOME/Downloads/edda.war"
 ```
 
 Once the playbook is finished, you will have Edda running inside Tomcat with MongoDB on your EC2 instance. You can access then [make queries to it via HTTP](https://github.com/Netflix/edda/wiki/REST). Example:
