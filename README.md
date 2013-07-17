@@ -111,7 +111,7 @@ http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com/eureka/
 
 ### Edda
 
-[Edda](https://github.com/Netflix/edda) is a service registry for resilient mid-tier load balancing and failover. Before running the playbook, there are a few things we need to do:
+[Edda](https://github.com/Netflix/edda) is a service to track changes in an AWS region, multiple regions and/or multiple accounts. Before running the playbook, there are a few things we need to do:
 
 1. Create an Edda security group
  - Allow port 22 for SSH
