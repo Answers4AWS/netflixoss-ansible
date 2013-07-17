@@ -6,7 +6,7 @@ This project is a set of Ansible Playbooks to configure instances to run some of
 
 - [Asgard](#asgard)
 - Aminator (coming soon)
-- Edda (coming soon)
+- [Edda](#edda)
 - [Eureka](#eureka)
 - Ice (coming soon)
 - Simian Army (coming soon)
@@ -109,6 +109,49 @@ Once the playbook is finished, you will have Eureka Server running inside Tomcat
 http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com/eureka/
 ```
 
+### Edda
+
+[Edda](https://github.com/Netflix/edda) is a service registry for resilient mid-tier load balancing and failover. Before running the playbook, there are a few things we need to do:
+
+1. Create an Edda security group
+ - Allow port 22 for SSH
+ - Allow port 80 for HTTP
+1. If you don't already, create a new Key pair, and add it to your keychain or SSH agent so you don't need to specify it later:
+```
+$ ssh-add mykey.pem
+```
+1. Create an [IAM Role](https://console.aws.amazon.com/iam/home?#roles) called 'edda' with [this policy](https://github.com/Netflix/edda/wiki/AWS-Permissions#example-policy)
+1. Launch a new EC2 instance using the above Security Group, key pair and IAM Role. You can use with Ubuntu or Amazon Linux for the OS.
+1. Set the `Name` tag of the instance to `Edda`
+1. Confirm you can see the instance using the Ansible EC2 inventory
+```
+$ /etc/ansible/hosts --refresh-cache | grep 'Edda'
+```
+
+Now you can run the playbook
+
+```
+$ ansible-playbook playbooks/edda-amazon-linux.yml -l 'tag_Name_Eureka'
+ or
+$ ansible-playbook playbooks/edda-ubuntu.yml -l 'tag_Name_Eureka'
+```
+
+This will configure the instance to be running the [latest snapshot build](https://netflixoss.ci.cloudbees.com/job/edda-master/lastSuccessfulBuild/artifact/build/libs/edda-2.1-SNAPSHOT.war) of Edda. If you prefer to build your own WAR file yourself, just specify the path to the WAR file:
+
+```
+$ ansible-playbook playbooks/edda-amazon-linux.yml -l 'tag_Name_Eureka' -e "local_war=$HOME/Downloads/edda.war"
+```
+
+Once the playbook is finished, you will have Edda running inside Tomcat with MongoDB on your EC2 instance. You can access then [make queries to it via HTTP](https://github.com/Netflix/edda/wiki/REST). Example:
+
+```
+http://ec2-12-212-12-121.us-west-2.compute.amazonaws.com/edda/api/v2/view/instances;_pp
+```
+
+_NOTES_:
+
+1. This is not production quality. If the instance dies, you loose your history. This is meant as a quick way to get Edda up and running and see if you like it. Have a look at [this wiki page for running Edda in production](https://github.com/Netflix/edda/wiki/Resiliency).
+1. The default configuration for Edda will only look at the `us-east-1` region. You can change `edda.region` config parameter (and other [configuration settings](https://github.com/Netflix/edda/wiki/Configuration#wiki-eddaregion)) by editing `/usr/local/tomcat/webapps/edda/WEB-INF/classes/edda.properties`.
 ## Feedback
 
 If you have feedback, comments or suggestions, please feel free to contact Peter at AWS Answers, create an Issue, or submit a pull request.
