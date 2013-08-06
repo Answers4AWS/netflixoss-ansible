@@ -154,15 +154,15 @@ _NOTES_:
 1. The default configuration for Edda will only look at the `us-east-1` region. You can change `edda.region` config parameter (and other [configuration settings](https://github.com/Netflix/edda/wiki/Configuration#wiki-eddaregion)) by editing `/usr/local/tomcat/webapps/edda/WEB-INF/classes/edda.properties`.
 ## Feedback
 
-If you have feedback, comments or suggestions, please feel free to contact Peter at AWS Answers, create an Issue, or submit a pull request.
+If you have feedback, comments or suggestions, please feel free to contact Peter at Answers for AWS, create an Issue, or submit a pull request.
 
-## About AWS Answers
+## About Answers for AWS
 
-These playbooks were written by [Peter Sankauskas](https://twitter.com/pas256), founder of [AWS Answers](http://awsanswers.com/) - a consulting company focused on helping business get the most out of AWS. If you are looking for help with AWS, please [contact us](http://awsanswers.com/contact/). 
+These playbooks were written by [Peter Sankauskas](https://twitter.com/pas256), founder of [Answers for AWS](http://answersforaws.com/) - a consulting company focused on helping business get the most out of AWS. If you are looking for help with AWS, please [contact us](http://answersforaws.com/contact/). 
 
 ## LICENSE
 
-Copyright 2013 AWS Answers LLC
+Copyright 2013 Answers for AWS LLC
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
