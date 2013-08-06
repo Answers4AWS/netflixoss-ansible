@@ -1,0 +1,44 @@
+---
+# Aminator role
+- name: Install Python libraries
+  pip: name=$item state=latest
+  with_items:
+    - distribute
+    - setuptools
+    - bunch
+
+- name: Create config directory
+  file: name=/etc/aminator state=directory owner=root group=root mode=0755
+  
+- name: Create logging directory
+  file: name=/var/log/aminator state=directory owner=root group=root mode=0755
+  
+- name: Create working directory
+  file: name=/var/aminator state=directory owner=root group=root mode=0755
+  
+- name: Checkout Aminator code from Github
+  git: repo=$aminator_repo
+       dest=/usr/local/aminator
+       version=$aminator_branch
+
+- name: Install Aminator
+  command: python setup.py install chdir=/usr/local/aminator
+
+- name: Copy config files
+  command: cp /usr/local/aminator/aminator/default_conf/$item /etc/aminator/$item
+  with_items:
+    - aminator.yml
+    - environments.yml
+    - logging.yml
+
+- name: Checkout NetflixOSS-Ansible code from Github
+  git: repo=https://github.com/Answers4AWS/netflixoss-ansible.git
+       dest=/usr/local/netflixoss-ansible
+       version=master
+  
+- name: Copy repo updating script
+  copy: src=pull-latest-netflixoss-ansible.sh dest=/usr/bin/pull-latest-netflixoss-ansible.sh owner=root group=root mode=0755
+
+- name: Add repo updating script to rc.local
+  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" regexp="pull-latest-netflixoss-ansible" line="/usr/bin/pull-latest-netflixoss-ansible.sh"
+  
