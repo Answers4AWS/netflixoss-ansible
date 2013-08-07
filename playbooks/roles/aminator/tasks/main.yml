@@ -13,8 +13,13 @@
 - name: Create logging directory
   file: name=/var/log/aminator state=directory owner=root group=root mode=0755
   
-- name: Create working directory
-  file: name=/var/aminator state=directory owner=root group=root mode=0755
+- name: Create working directories
+  file: name={{ item }} state=directory owner=root group=root mode=0755
+  with_items:
+    - /var/aminator
+    - /var/aminator/lock
+    - /var/aminator/volumes
+  tags: dirs
   
 - name: Checkout Aminator code from Github
   git: repo=$aminator_repo
