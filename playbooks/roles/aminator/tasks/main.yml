@@ -47,3 +47,6 @@
 - name: Add repo updating script to rc.local
   lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" regexp="pull-latest-netflixoss-ansible" line="/usr/bin/pull-latest-netflixoss-ansible.sh"
   
+- name: Install DistAMI
+  pip: name=distami state=latest
+  
