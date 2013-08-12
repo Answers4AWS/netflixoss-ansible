@@ -17,22 +17,28 @@
   "Mappings":{
     "AWSRegion2AMI":{
       "us-east-1":{
-        "ami":"ami-00000000"
+        "ami":"ami-00d59369"
       },
       "us-west-1":{
-        "ami":"ami-00000000"
+        "ami":"ami-0aa68d4f"
       },
       "us-west-2":{
-        "ami":"ami-fdd04dcd"
+        "ami":"ami-35821f05"
       },
       "eu-west-1":{
-        "ami":"ami-00000000"
+        "ami":"ami-a96971dd"
+      },
+      "sa-east-1":{
+        "ami":"ami-5368cc4e"
       },
       "ap-southeast-1":{
-        "ami":"ami-00000000"
+        "ami":"ami-36ace464"
+      },
+      "ap-southeast-2":{
+        "ami":"ami-734ddf49"
       },
       "ap-northeast-1":{
-        "ami":"ami-00000000"
+        "ami":"ami-e9af3fe8"
       }
     }
   },
@@ -67,6 +73,7 @@
 			      "Action": [
 			        "ec2:AttachVolume",
 			        "ec2:CopySnapshot",
+                    "ec2:CreateImage",
 			        "ec2:CreateSnapshot",
 			        "ec2:CreateTags",
 			        "ec2:CreateVolume",
@@ -75,7 +82,12 @@
 			        "ec2:DeleteVolume",
 			        "ec2:DeregisterImage",
 			        "ec2:DetachVolume",
+			        "ec2:ModifyImageAttribute",
+			        "ec2:ModifySnapshotAttribute",
+			        "ec2:ModifyVolumeAttribute",
 			        "ec2:RegisterImage",
+			        "ec2:ResetImageAttribute",
+			        "ec2:ResetSnapshotAttribute",
 			        "ec2:Describe*"
 			      ],
                   "Resource": "*"
