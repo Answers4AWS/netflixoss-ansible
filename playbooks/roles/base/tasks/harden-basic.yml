@@ -42,7 +42,6 @@
   file: dest=/root state=directory mode=700
   
 # Shared memory
-- name: Mount tmpfs read only
-  mount: name=/dev/shm src=tmpfs fstype=tmpfs opts=defaults,ro state=present
-  
-  
+- name: Secure tmpfs read only
+  mount: name=/dev/shm src=tmpfs fstype=tmpfs opts=rw,nosuid,nodev,noexec state=present
+  tags: tmpfs
