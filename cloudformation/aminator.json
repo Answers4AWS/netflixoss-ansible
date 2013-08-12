@@ -1,0 +1,165 @@
+{
+  "AWSTemplateFormatVersion":"2010-09-09",
+  "Description":"Aminator by Answers for AWS",
+  "Parameters":{
+    "InstanceType":{
+      "Description":"Type of EC2 instances to launch",
+      "Type":"String",
+      "Default":"t1.micro"
+    },
+    "KeyName":{
+      "Description":"The EC2 Key Pair to allow SSH access to the instances",
+      "Type":"String",
+      "Default":""
+    }
+  },
+  
+  "Mappings":{
+    "AWSRegion2AMI":{
+      "us-east-1":{
+        "ami":"ami-00000000"
+      },
+      "us-west-1":{
+        "ami":"ami-00000000"
+      },
+      "us-west-2":{
+        "ami":"ami-fdd04dcd"
+      },
+      "eu-west-1":{
+        "ami":"ami-00000000"
+      },
+      "ap-southeast-1":{
+        "ami":"ami-00000000"
+      },
+      "ap-northeast-1":{
+        "ami":"ami-00000000"
+      }
+    }
+  },
+  
+  "Resources" : {
+    "AminatorIamRole":{
+      "Type":"AWS::IAM::Role",
+      "Properties":{
+        "AssumeRolePolicyDocument":{
+          "Statement":[
+            {
+              "Effect":"Allow",
+              "Principal":{
+                "Service":[
+                  "ec2.amazonaws.com"
+                ]
+              },
+              "Action":[
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path":"/",
+        "Policies":[
+          {
+            "PolicyName":"AminatorPolicy",
+            "PolicyDocument":{
+              "Statement": [
+                {
+                  "Effect": "Allow",
+			      "Action": [
+			        "ec2:AttachVolume",
+			        "ec2:CopySnapshot",
+			        "ec2:CreateSnapshot",
+			        "ec2:CreateTags",
+			        "ec2:CreateVolume",
+			        "ec2:DeleteSnapshot",
+			        "ec2:DeleteTags",
+			        "ec2:DeleteVolume",
+			        "ec2:DeregisterImage",
+			        "ec2:DetachVolume",
+			        "ec2:RegisterImage",
+			        "ec2:Describe*"
+			      ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "AminatorInstanceProfile":{
+      "Type":"AWS::IAM::InstanceProfile",
+      "Properties":{
+        "Path":"/",
+        "Roles":[
+          {
+            "Ref":"AminatorIamRole"
+          }
+        ]
+      }
+    },
+    
+    "AminatorASG":{
+      "Type":"AWS::AutoScaling::AutoScalingGroup",
+      "Properties":{
+        "AvailabilityZones":{
+          "Fn::GetAZs":""
+        },
+        "LaunchConfigurationName":{
+          "Ref":"AminatorLaunchConfig"
+        },
+        "MinSize":1,
+        "MaxSize":1,
+        "Cooldown":"120",
+        "Tags":[
+          {
+            "Key":"Name",
+            "Value":"Aminator",
+            "PropagateAtLaunch":"true"
+          }
+        ]
+      }
+    },
+    
+    "AminatorLaunchConfig":{
+      "Type":"AWS::AutoScaling::LaunchConfiguration",
+      "Properties":{
+        "KeyName":{
+          "Ref":"KeyName"
+        },
+        "ImageId":{
+          "Fn::FindInMap":[
+            "AWSRegion2AMI",
+            {
+              "Ref":"AWS::Region"
+            },
+            "ami"
+          ]
+        },
+        "SecurityGroups":[
+          {
+            "Ref":"AminatorSecurityGroup"
+          }
+        ],
+        "InstanceType":{ "Ref": "InstanceType" },
+        "IamInstanceProfile":{
+          "Ref":"AminatorInstanceProfile"
+        }
+      }
+    },
+    
+    "AminatorSecurityGroup":{
+      "Type":"AWS::EC2::SecurityGroup",
+      "Properties":{
+        "GroupDescription":"Access to Aminator",
+        "SecurityGroupIngress":[
+          {
+            "IpProtocol":"tcp",
+            "FromPort":"22",
+            "ToPort":"22",
+            "CidrIp":"0.0.0.0/0"
+          }
+        ]
+      }
+    }
+  }
+}
