@@ -4,11 +4,14 @@
 
 This project is a set of Ansible Playbooks to configure instances to run some of the [NetflixOSS](http://netflix.github.io/) projects.
 
+- Archaius (coming soon)
+- [Aminator](#aminator)
 - [Asgard](#asgard)
-- Aminator (coming soon)
 - [Edda](#edda)
 - [Eureka](#eureka)
+- Genie (coming soon)
 - Ice (coming soon)
+- Lipstick (coming soon)
 - Simian Army (coming soon)
 
 ## Prerequisites
@@ -36,6 +39,45 @@ The base configuration is gets a system ready for production. You can find the [
 - does some basic system hardening
 
 ## Projects
+
+### Aminator
+
+[Aminator](https://github.com/Netflix/aminator) is a tool for creating EBS AMIs for AWS. Before running the playbook, there are a few things we need to do:
+
+1. Create an Aminator [IAM Role](https://console.aws.amazon.com/iam/home?#roles) with [this policy](https://github.com/Netflix/aminator/wiki/Configuration#sample-policy)
+1. Create an Aminator security group
+ - Allow port 22 for SSH
+1. If you don't already, create a new Key pair, and add it to your keychain or SSH agent so you don't need to specify it later:
+```
+$ ssh-add mykey.pem
+```
+1. Launch a new EC2 instance using the above IAM Role, Security Group and key pair. Use Ubuntu 12.04 LTS as the AMI.
+1. Set the `Name` tag of the instance to `Aminator`
+1. Confirm you can see the instance using the Ansible EC2 inventory
+```
+$ /etc/ansible/hosts | grep 'Aminator'
+```
+
+Now you can run the playbook
+
+```
+$ ansible-playbook playbooks/aminator-ubuntu.yml -l 'tag_Name_Aminator'
+```
+
+If you are using this playbook, there is a decent chance you want to use the Ansible Provisioner for Aminator as well. Since this has not been merge yet (spam _mtripoli_ and _kvick_ if you want this merged), instead of pulling Aminator from their repo, it pulls from here: https://github.com/pas256/aminator.git. You can modify the file in `roles/aminator/vars/main.yml` and change the repo if you like. Aminator is installed to `/usr/local/aminator`.
+
+The playbook also checks out this repo as well, so you can start baking your own AMIs based off these playbooks. You can find it here: `/usr/local/netflixoss-ansible`
+
+One more thing. If you want to pay it forward, this playbook also installs [DistAMI](https://github.com/Answers4AWS/distami). Now there are no excuses for keeping useful AMIs private.
+
+Once the playbook is finished, you can SSH to the instance an start aminating. Example:
+
+```
+ssh ubuntu@ec2.xyz
+sudo aminate -e ec2_ansible_linux -B ami-bb2ab88b aminator-ubuntu.yml 
+```
+
+If all of that seems too hard, feel free to use the [Aminator CloudFormation template](https://github.com/Answers4AWS/netflixoss-ansible/blob/master/cloudformation/aminator.json) to bring up Aminator in just a few clicks.
 
 ### Asgard
 
@@ -160,7 +202,7 @@ If you have feedback, comments or suggestions, please feel free to contact Peter
 
 These playbooks were written by [Peter Sankauskas](https://twitter.com/pas256), founder of [Answers for AWS](http://answersforaws.com/) - a consulting company focused on helping business get the most out of AWS. If you are looking for help with AWS, please [contact us](http://answersforaws.com/contact/). 
 
-## LICENSE
+## License
 
 Copyright 2013 Answers for AWS LLC
 
