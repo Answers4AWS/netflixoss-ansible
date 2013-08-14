@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion":"2010-09-09",
-  "Description":"Aminator by Answers for AWS",
+  "Description":"NetflixOSS Aminator by Answers for AWS",
   "Parameters":{
     "InstanceType":{
       "Description":"Type of EC2 instances to launch",
@@ -10,6 +10,10 @@
     "KeyName":{
       "Description":"The EC2 Key Pair to allow SSH access to the instances",
       "Type":"String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedPattern" : "[-_ a-zA-Z0-9]*",
+      "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores.",
       "Default":""
     }
   },
