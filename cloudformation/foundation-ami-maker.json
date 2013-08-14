@@ -1,15 +1,21 @@
 {
   "AWSTemplateFormatVersion":"2010-09-09",
-  "Description":"Aminator by Answers for AWS",
+  "Description":"Foundation AMI maker by Answers for AWS",
   "Parameters":{
     "InstanceType":{
       "Description":"Type of EC2 instances to launch",
       "Type":"String",
-      "Default":"t1.micro"
+      "Default":"t1.micro",
+      "AllowedValues" : [ "t1.micro", "m1.small", "m1.large", "m1.xlarge", "m2.xlarge", "m2.2xlarge", "m2.4xlarge", "c1.medium", "c1.xlarge" ],
+      "ConstraintDescription" : "must be a valid EC2 instance type."
     },
     "KeyName":{
       "Description":"The EC2 Key Pair to allow SSH access to the instances",
       "Type":"String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedPattern" : "[-_ a-zA-Z0-9]*",
+      "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores.",
       "Default":""
     }
   },
@@ -17,34 +23,34 @@
   "Mappings":{
     "AWSRegion2AMI":{
       "us-east-1":{
-        "ami":"ami-00d59369"
+        "ami":"ami-80b5f3e9"
       },
       "us-west-1":{
-        "ami":"ami-0aa68d4f"
+        "ami":"ami-1aad865f"
       },
       "us-west-2":{
-        "ami":"ami-35821f05"
+        "ami":"ami-9f8518af"
       },
       "eu-west-1":{
-        "ami":"ami-a96971dd"
+        "ami":"ami-017b6375"
       },
       "sa-east-1":{
-        "ami":"ami-5368cc4e"
+        "ami":"ami-dd6dc9c0"
       },
       "ap-southeast-1":{
-        "ami":"ami-36ace464"
+        "ami":"ami-be97dfec"
       },
       "ap-southeast-2":{
-        "ami":"ami-734ddf49"
+        "ami":"ami-ef4edcd5"
       },
       "ap-northeast-1":{
-        "ami":"ami-e9af3fe8"
+        "ami":"ami-c9b929c8"
       }
     }
   },
   
   "Resources" : {
-    "AminatorIamRole":{
+    "IamRole":{
       "Type":"AWS::IAM::Role",
       "Properties":{
         "AssumeRolePolicyDocument":{
@@ -65,7 +71,7 @@
         "Path":"/",
         "Policies":[
           {
-            "PolicyName":"AminatorPolicy",
+            "PolicyName":"Policy",
             "PolicyDocument":{
               "Statement": [
                 {
@@ -81,7 +87,6 @@
                     "ec2:DeleteSnapshot",
                     "ec2:DeleteTags",
                     "ec2:DeleteVolume",
-                    "ec2:DeregisterImage",
                     "ec2:DetachVolume",
                     "ec2:ModifyImageAttribute",
                     "ec2:ModifySnapshotAttribute",
@@ -99,45 +104,23 @@
         ]
       }
     },
-    "AminatorInstanceProfile":{
+    "InstanceProfile":{
       "Type":"AWS::IAM::InstanceProfile",
       "Properties":{
         "Path":"/",
         "Roles":[
           {
-            "Ref":"AminatorIamRole"
+            "Ref":"IamRole"
           }
         ]
       }
     },
     
-    "AminatorASG":{
-      "Type":"AWS::AutoScaling::AutoScalingGroup",
-      "Properties":{
-        "AvailabilityZones":{
-          "Fn::GetAZs":""
-        },
-        "LaunchConfigurationName":{
-          "Ref":"AminatorLaunchConfig"
-        },
-        "MinSize":1,
-        "MaxSize":1,
-        "Cooldown":"120",
-        "Tags":[
-          {
-            "Key":"Name",
-            "Value":"Aminator",
-            "PropagateAtLaunch":"true"
-          }
-        ]
-      }
-    },
-    
-    "AminatorLaunchConfig":{
-      "Type":"AWS::AutoScaling::LaunchConfiguration",
-      "Properties":{
-        "KeyName":{
-          "Ref":"KeyName"
+    "Instance":{
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "IamInstanceProfile":{
+          "Ref":"InstanceProfile"
         },
         "ImageId":{
           "Fn::FindInMap":[
@@ -148,22 +131,35 @@
             "ami"
           ]
         },
-        "SecurityGroups":[
-          {
-            "Ref":"AminatorSecurityGroup"
-          }
-        ],
         "InstanceType":{ "Ref": "InstanceType" },
-        "IamInstanceProfile":{
-          "Ref":"AminatorInstanceProfile"
+        "KeyName":{
+          "Ref":"KeyName"
+        },
+        "SecurityGroupIds": [ { "Ref": "SecurityGroup" } ],
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : "Foundation-maker"
+        } ],
+        "UserData":{
+          "Fn::Base64":{
+            "Fn::Join":[
+              "\n",
+              [
+                "#!/bin/bash",
+                "echo 'Downloading Foundation AMI scripts from S3'",
+                "sudo -u ubuntu -H -i wget http://answers4aws.s3.amazonaws.com/foundation-ami-maker.tgz",
+                "sudo -u ubuntu -H -i tar xvzf foundation-ami-maker.tgz"
+              ]
+            ]
+          }
         }
       }
     },
     
-    "AminatorSecurityGroup":{
+    "SecurityGroup":{
       "Type":"AWS::EC2::SecurityGroup",
       "Properties":{
-        "GroupDescription":"Access to Aminator",
+        "GroupDescription":"Access to Foundation AMI maker",
         "SecurityGroupIngress":[
           {
             "IpProtocol":"tcp",
@@ -173,6 +169,38 @@
           }
         ]
       }
+    }
+  },
+  
+  "Outputs":{
+    "step001":{
+      "Description":"Step 1: SSH to this instance using your KeyPair",
+      "Value":{
+        "Fn::Join":[
+          "",
+          [
+            "ssh -i ",
+            {
+              "Ref":"KeyName"
+            },
+            ".pem ubuntu@",
+            {
+              "Fn::GetAtt":[
+                "Instance",
+                "PublicDnsName"
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "step002":{
+      "Description":"Step 2: Create a Foundation EBS volume",
+      "Value":"./foundation-create-volume"
+    },
+    "step003":{
+      "Description":"Step 3: Create your Foundation AMI from the Foundation EBS volume",
+      "Value":"./foundation-create-ami"
     }
   }
 }
