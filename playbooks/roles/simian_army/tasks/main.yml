@@ -1,0 +1,14 @@
+---
+# Simian Army role
+- name: Copy local Simian Army WAR file $local_war
+  copy: src=$local_war dest=/usr/local/tomcat/webapps/simianarmy.war
+  when_string: $local_war != ""
+  tags: deploy
+  
+- name: Download snapshot build of Simian Army from Cloudbees
+  get_url: url=$latest_successful_build_url dest=/usr/local/tomcat/webapps/simianarmy.war
+  when_string: $local_war == ""
+  tags: deploy
+  
+- name: Copy over SimpleDB script
+  copy: src=sdb dest=/usr/bin/sdb owner=root group=root mode=0755

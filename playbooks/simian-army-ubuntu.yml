@@ -1,0 +1,15 @@
+---
+# Simian Army playbook for ubuntu
+- name: Simian Army
+  user: ubuntu
+  sudo: True
+  tags: monkeys
+  hosts: all
+  roles:
+    - base
+    - tomcat
+    - simian_army
+  vars:
+    local_war: "" 
+  vars_files:
+    - vars/$ansible_distribution.yml

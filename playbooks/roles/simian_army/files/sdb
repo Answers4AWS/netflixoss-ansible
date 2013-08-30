@@ -1,0 +1,121 @@
+#!/usr/bin/python 
+# Copyright 2013 Answers for AWS LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This is a tiny little script that performs a very small set of AWS SimpleDB
+# actions
+
+import sys
+import argparse
+import logging
+
+import boto.sdb
+from boto.utils import get_instance_metadata
+
+log = logging.getLogger(__name__)
+
+
+
+class Logging(object):
+    # Logging formats
+    _log_simple_format = '%(asctime)s [%(levelname)s] %(message)s'
+    _log_detailed_format = '%(asctime)s [%(levelname)s] [%(name)s(%(lineno)s):%(funcName)s] %(message)s'
+    
+    def configure(self, verbosity = None):
+        ''' Configure the logging format and verbosity '''
+        
+        # Configure our logging output
+        if verbosity >= 2:
+            logging.basicConfig(level=logging.DEBUG, format=self._log_detailed_format, datefmt='%F %T')
+        elif verbosity >= 1:
+            logging.basicConfig(level=logging.INFO, format=self._log_detailed_format, datefmt='%F %T')
+        else:
+            logging.basicConfig(level=logging.INFO, format=self._log_simple_format, datefmt='%F %T')
+    
+        # Configure Boto's logging output
+        if verbosity >= 4:
+            logging.getLogger('boto').setLevel(logging.DEBUG)
+        elif verbosity >= 3:
+            logging.getLogger('boto').setLevel(logging.INFO)
+        else:
+            logging.getLogger('boto').setLevel(logging.CRITICAL)    
+    
+
+def _fail(message="Unknown failure", code=1):
+    log.error(message)
+    sys.exit(code)
+
+    
+def main():
+    parser = argparse.ArgumentParser(description='Perform a very small set of actions against AWS SimpleDB')
+    parser.add_argument('--region', metavar='REGION', 
+                        help='the region to use (default is current region of EC2 instance this is running on). E.g. us-east-1')
+    parser.add_argument('command', choices=['CreateDomain', 'ListDomains', 'DeleteDomain'],
+                        help='The command to run (either CreateDomain, ListDomains or DeleteDomain)')
+    parser.add_argument('argument', metavar='ARG', nargs='*',
+                        help='The argument to pass to the command')
+    parser.add_argument('--verbose', '-v', action='count', 
+                        help='enable verbose output (-vvv for more)')
+    args = parser.parse_args()
+        
+    
+    Logging().configure(args.verbose)
+    
+    log.debug("CLI parse args: %s", args)
+    
+    if args.region:
+        region = args.region
+    else:
+        # If no region was specified, assume this is running on an EC2 instance
+        # and work out what region it is in
+        log.debug("Figure out which region I am running in...")
+        instance_metadata = get_instance_metadata(timeout=5)
+        log.debug('Instance meta-data: %s', instance_metadata)
+        if not instance_metadata:
+            _fail('Could not determine region. This script is either not running on an EC2 instance, or the meta-data service is down')
+        
+        region = instance_metadata['placement']['availability-zone'][:-1]
+        log.debug("Running in region: %s", region)
+        
+    conn = boto.sdb.connect_to_region(region)
+
+    if args.command == 'ListDomains':
+        log.info('Getting list of domains...')
+        domains = conn.get_all_domains()
+        for domain in domains:
+            log.info('  - %s', domain.name)
+    
+    elif args.command == 'CreateDomain':
+        if len(args.argument) != 1:
+            _fail('The name of the domain is required as the first argument')
+        domain_name = args.argument[0]
+        log.info('Creating domain %s...', domain_name)
+        domain = conn.create_domain(domain_name)
+        if not domain:
+            _fail('Unknown error while creating domain. Try increasing verbosity with -vvvv to find out why.')
+    
+    elif args.command == 'DeleteDomain':
+        if len(args.argument) != 1:
+            _fail('The name of the domain is required as the first argument')
+        domain_name = args.argument[0]
+        log.info('Deleting domain %s...', domain_name)
+        success = conn.delete_domain(domain_name)
+        if not success:
+            _fail('Unknown error while deleting domain. Try increasing verbosity with -vvvv to find out why.')
+    
+    log.info('Completed successfully')
+
+
+if __name__ == "__main__":
+    main()
