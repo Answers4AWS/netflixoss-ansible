@@ -1,0 +1,208 @@
+{
+  "AWSTemplateFormatVersion":"2010-09-09",
+  "Description":"NetflixOSS Simian Army by Answers for AWS",
+  "Parameters":{
+    "InstanceType":{
+      "Description":"Type of EC2 instances to launch",
+      "Type":"String",
+      "Default":"t1.micro",
+      "AllowedValues" : [ "t1.micro", "m1.small", "m1.medium", "m1.large", "m1.xlarge", "m2.xlarge", "m2.2xlarge", "m2.4xlarge", "m3.xlarge", "m3.2xlarge", "c1.medium", "c1.xlarge", "cg1.4xlarge" ],
+      "ConstraintDescription" : "must be a valid EC2 instance type."
+    },
+    "KeyName":{
+      "Description":"The EC2 Key Pair to allow SSH access to the instances",
+      "Type":"String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedPattern" : "[-_ a-zA-Z0-9]*",
+      "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores.",
+      "Default":""
+    },
+    "WebAccessIP":{
+      "Description":"The IP address to allow web access from (your IP address)",
+      "Type":"String",
+      "MinLength": "7",
+      "MaxLength": "15",
+      "AllowedPattern" : "[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+",
+      "ConstraintDescription" : "must be a valid IP address",
+      "Default":""
+    }
+  },
+  
+  "Mappings":{
+    "AWSRegion2AMI":{
+      "us-east-1":{
+        "ami":"ami-00000000"
+      },
+      "us-west-1":{
+        "ami":"ami-00000000"
+      },
+      "us-west-2":{
+        "ami":"ami-00000000"
+      },
+      "eu-west-1":{
+        "ami":"ami-00000000"
+      },
+      "sa-east-1":{
+        "ami":"ami-00000000"
+      },
+      "ap-southeast-1":{
+        "ami":"ami-00000000"
+      },
+      "ap-southeast-2":{
+        "ami":"ami-00000000"
+      },
+      "ap-northeast-1":{
+        "ami":"ami-00000000"
+      }
+    }
+  },
+  
+  "Resources" : {
+    "SimianArmyIamRole":{
+      "Type":"AWS::IAM::Role",
+      "Properties":{
+        "AssumeRolePolicyDocument":{
+          "Statement":[
+            {
+              "Effect":"Allow",
+              "Principal":{
+                "Service":[
+                  "ec2.amazonaws.com"
+                ]
+              },
+              "Action":[
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path":"/",
+        "Policies":[
+          {
+            "PolicyName":"SimianArmyPolicy",
+            "PolicyDocument":{
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ec2:CreateTags",
+                    "ec2:DeleteSnapshot",
+                    "ec2:DescribeImages",
+                    "ec2:DescribeInstances",
+                    "ec2:DescribeSnapshots",
+                    "ec2:DescribeVolumes",
+                    "ec2:TerminateInstances",
+                    "autoscaling:DeleteAutoScalingGroup",
+                    "autoscaling:DescribeAutoScalingGroups",
+                    "autoscaling:DescribeAutoScalingInstances",
+                    "autoscaling:DescribeLaunchConfigurations",
+                    "sdb:BatchDeleteAttributes",
+                    "sdb:BatchPutAttributes",
+                    "sdb:CreateDomain",
+                    "sdb:DeleteDomain",
+                    "sdb:DomainMetadata",
+                    "sdb:GetAttributes",
+                    "sdb:ListDomains",
+                    "sdb:PutAttributes",
+                    "sdb:Select"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "SimianArmyInstanceProfile":{
+      "Type":"AWS::IAM::InstanceProfile",
+      "Properties":{
+        "Path":"/",
+        "Roles":[
+          {
+            "Ref":"SimianArmyIamRole"
+          }
+        ]
+      }
+    },
+    
+    "SimianArmyASG":{
+      "Type":"AWS::AutoScaling::AutoScalingGroup",
+      "Properties":{
+        "AvailabilityZones":{
+          "Fn::GetAZs":""
+        },
+        "LaunchConfigurationName":{
+          "Ref":"SimianArmyLaunchConfig"
+        },
+        "MinSize":1,
+        "MaxSize":1,
+        "Cooldown":"120",
+        "Tags":[
+          {
+            "Key":"Name",
+            "Value":"SimianArmy",
+            "PropagateAtLaunch":"true"
+          }
+        ]
+      }
+    },
+    
+    "SimianArmyLaunchConfig":{
+      "Type":"AWS::AutoScaling::LaunchConfiguration",
+      "Properties":{
+        "KeyName":{
+          "Ref":"KeyName"
+        },
+        "ImageId":{
+          "Fn::FindInMap":[
+            "AWSRegion2AMI",
+            {
+              "Ref":"AWS::Region"
+            },
+            "ami"
+          ]
+        },
+        "SecurityGroups":[
+          {
+            "Ref":"SimianArmySecurityGroup"
+          }
+        ],
+        "InstanceType":{ "Ref": "InstanceType" },
+        "IamInstanceProfile":{
+          "Ref":"SimianArmyInstanceProfile"
+        }
+      }
+    },
+    
+    "SimianArmySecurityGroup":{
+      "Type":"AWS::EC2::SecurityGroup",
+      "Properties":{
+        "GroupDescription":"Access to Simian Army",
+        "SecurityGroupIngress":[
+          {
+            "IpProtocol":"tcp",
+            "FromPort":"22",
+            "ToPort":"22",
+            "CidrIp":"0.0.0.0/0"
+          },
+          {
+            "IpProtocol":"tcp",
+            "FromPort":"80",
+            "ToPort":"80",
+            "CidrIp":{
+              "Fn::Join":[
+                "",
+                [
+                  { "Ref": "WebAccessIP" },
+                  "/32"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

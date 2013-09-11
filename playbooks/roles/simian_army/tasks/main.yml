@@ -1,5 +1,15 @@
 ---
 # Simian Army role
+- name: Copy tomcat server.xml file
+  copy: src=server.xml dest=/usr/local/tomcat/conf/server.xml owner=root group=root mode=0644
+  notify:
+    - restart tomcat
+  tags: deploy
+
+- name: Remove default root webapp
+  file: path=/usr/local/tomcat/webapps/ROOT state=absent
+  tags: deploy
+
 - name: Copy local Simian Army WAR file $local_war
   copy: src=$local_war dest=/usr/local/tomcat/webapps/simianarmy.war
   when_string: $local_war != ""
@@ -10,5 +20,33 @@
   when_string: $local_war == ""
   tags: deploy
   
+- name: Remove any old version
+  file: path=/usr/local/tomcat/webapps/simianarmy state=absent
+  tags: deploy
+  
+- name: Create Simian Army deployment director
+  file: path=/usr/local/tomcat/webapps/simianarmy state=directory
+  tags: deploy
+
+- name: Decompress Simian Army WAR file
+  command: chdir=/usr/local/tomcat/webapps/simianarmy unzip ../simianarmy.war
+  tags: deploy
+  
+- name: Remove source WAR file
+  file: path=/usr/local/tomcat/webapps/simianarmy.war state=absent
+  tags: deploy
+  
 - name: Copy over SimpleDB script
   copy: src=sdb dest=/usr/bin/sdb owner=root group=root mode=0755
+
+- name: Copy configuration script
+  copy: src=configure-simian-army.sh dest=/usr/bin/configure-simian-army.sh owner=root group=root mode=0755
+  notify: run rc.local
+  tags:
+   - rc
+   - config
+
+- name: Add configuration script to rc.local
+  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" regexp="configure-simian-army" line="/usr/bin/configure-simian-army.sh"
+  notify: run rc.local
+  tags: rc
