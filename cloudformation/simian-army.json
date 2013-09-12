@@ -15,8 +15,7 @@
       "MinLength": "1",
       "MaxLength": "64",
       "AllowedPattern" : "[-_ a-zA-Z0-9]*",
-      "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores.",
-      "Default":""
+      "ConstraintDescription" : "can contain only alphanumeric characters, spaces, dashes and underscores."
     },
     "WebAccessIP":{
       "Description":"The IP address to allow web access from (your IP address)",
@@ -24,40 +23,39 @@
       "MinLength": "7",
       "MaxLength": "15",
       "AllowedPattern" : "[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+",
-      "ConstraintDescription" : "must be a valid IP address",
-      "Default":""
+      "ConstraintDescription" : "must be a valid IP address"
     }
   },
   
   "Mappings":{
     "AWSRegion2AMI":{
       "us-east-1":{
-        "ami":"ami-00000000"
+        "ami":"ami-b386cfda"
       },
       "us-west-1":{
-        "ami":"ami-00000000"
+        "ami":"ami-ee1124ab"
       },
       "us-west-2":{
-        "ami":"ami-00000000"
+        "ami":"ami-e0cc53d0"
       },
       "eu-west-1":{
-        "ami":"ami-00000000"
+        "ami":"ami-b819fccf"
       },
       "sa-east-1":{
-        "ami":"ami-00000000"
+        "ami":"ami-bddc7ba0"
       },
       "ap-southeast-1":{
-        "ami":"ami-00000000"
+        "ami":"ami-369ad164"
       },
       "ap-southeast-2":{
-        "ami":"ami-00000000"
+        "ami":"ami-29910c13"
       },
       "ap-northeast-1":{
-        "ami":"ami-00000000"
+        "ami":"ami-a1fa66a0"
       }
     }
   },
-  
+
   "Resources" : {
     "SimianArmyIamRole":{
       "Type":"AWS::IAM::Role",
@@ -105,7 +103,8 @@
                     "sdb:GetAttributes",
                     "sdb:ListDomains",
                     "sdb:PutAttributes",
-                    "sdb:Select"
+                    "sdb:Select",
+                    "ses:SendEmail"
                   ],
                   "Resource": "*"
                 }
