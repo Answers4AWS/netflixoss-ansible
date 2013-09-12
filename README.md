@@ -86,7 +86,7 @@ If all of that seems too hard, feel free to use the [Aminator CloudFormation tem
 1. Create an Asgard security group
  - Allow port 22 for SSH
  - Allow port 80 for HTTP
-1. If you don't already, create a new Key pair, and add it to your keychain or SSH agent so you don't need to specify it later:
+1. If you don't already have one, create a new Key Pair, and add it to your keychain or SSH agent so you don't need to specify it later:
 ```
 $ ssh-add mykey.pem
 ```
@@ -122,7 +122,7 @@ http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com/
 1. Create a Eureka security group
  - Allow port 22 for SSH
  - Allow port 80 for HTTP
-1. If you don't already, create a new Key pair, and add it to your keychain or SSH agent so you don't need to specify it later:
+1. If you don't already have one, create a new Key Pair, and add it to your keychain or SSH agent so you don't need to specify it later:
 ```
 $ ssh-add mykey.pem
 ```
@@ -158,7 +158,7 @@ http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com/eureka/
 1. Create an Edda security group
  - Allow port 22 for SSH
  - Allow port 80 for HTTP
-1. If you don't already, create a new Key pair, and add it to your keychain or SSH agent so you don't need to specify it later:
+1. If you don't already have one, create a new Key Pair, and add it to your keychain or SSH agent so you don't need to specify it later:
 ```
 $ ssh-add mykey.pem
 ```
@@ -205,7 +205,7 @@ The [Simian Army](https://github.com/Netflix/SimianArmy) are tools for keeping y
 1. Create a Simian Army security group
  - Allow port 22 for SSH
  - Allow port 80 for REST access only from your own IP address
-1. Create a new Key pair (if you don't already one) and add it to your keychain or SSH agent so you don't need to specify it later:
+1. Create a new Key pair (if you don't already have one) and add it to your keychain or SSH agent so you don't need to specify it later:
 ```
 $ ssh-add mykey.pem
 ```
