@@ -1,0 +1,17 @@
+---
+ami_build: "'$ami' == 'yes'"
+latest_successful_build_url: https://netflixoss.ci.cloudbees.com/job/ice-master/lastSuccessfulBuild/artifact/target/ice.war
+
+# The S3 buckets and prefixes (comma separated) where your S3 programmatic
+# billing files are stored
+ice_billing_s3_bucket_names: example-billing
+ice_billing_s3_bucket_prefix: 
+
+# Your company's name
+ice_company_name: Your Company Name
+
+# The S3 bucket Ice can use as it's workspace (needs read and write access)
+ice_work_s3_bucket_name: example-ice-work
+
+# Your AWS Account ID
+ice_account1_aws_id: 123456789011

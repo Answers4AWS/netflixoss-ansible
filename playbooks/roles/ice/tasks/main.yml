@@ -1,0 +1,62 @@
+---
+# Ice role
+- name: Copy tomcat server.xml file
+  copy: src=server.xml dest=/usr/local/tomcat/conf/server.xml owner=root group=root mode=0644
+  notify: restart tomcat
+  tags: deploy
+
+- name: Remove default root webapp
+  file: path=/usr/local/tomcat/webapps/ROOT state=absent
+  notify: restart tomcat
+  tags: deploy
+
+- name: Copy local Ice WAR file $local_war
+  copy: src=$local_war dest=/usr/local/tomcat/webapps/ice.war
+  when_string: $local_war != ""
+  tags: deploy
+  
+- name: Download snapshot build of Ice from Cloudbees
+  get_url: url=$latest_successful_build_url dest=/usr/local/tomcat/webapps/ice.war
+  when_string: $local_war == ""
+  tags: deploy
+  
+- name: Remove any old version
+  file: path=/usr/local/tomcat/webapps/ice state=absent
+  tags: deploy
+  
+- name: Create Ice deployment director
+  file: path=/usr/local/tomcat/webapps/ice state=directory
+  tags: deploy
+
+- name: Decompress Ice WAR file
+  command: chdir=/usr/local/tomcat/webapps/ice unzip ../ice.war
+  notify: restart tomcat
+  tags: deploy
+  
+- name: Remove source WAR file
+  file: path=/usr/local/tomcat/webapps/ice.war state=absent
+  notify: restart tomcat
+  tags: deploy
+
+- name: Copy configuration script
+  template: src=configure-ice.sh.j2 dest=/usr/bin/configure-ice.sh owner=root group=root mode=0755
+  notify: run rc.local
+  tags:
+   - rc
+   - config
+
+- name: Add configuration script to rc.local
+  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" regexp="configure-ice" line="/usr/bin/configure-ice.sh"
+  notify: run rc.local
+  tags: rc
+
+- name: Copy ice.properties
+  template: src=ice.properties.j2 dest=/usr/local/tomcat/webapps/ice/WEB-INF/classes/ice.properties owner=root group=root mode=0644
+  notify: restart tomcat
+  tags: config
+  
+- name: Add ICE_HOME to environment
+  lineinfile: dest=/etc/default/tomcat7 regexp="ICE_HOME" line="ICE_HOME=/usr/local/tomcat/webapps/ice/WEB-INF/classes/"
+  notify: restart tomcat
+  tags: config
+  

@@ -1,0 +1,15 @@
+---
+# Ice playbook for ubuntu
+- name: Ice
+  user: ubuntu
+  sudo: True
+  tags: ice
+  hosts: all
+  roles:
+    - base
+    - tomcat
+    - ice
+  vars:
+    local_war: "" 
+  vars_files:
+    - vars/$ansible_distribution.yml
