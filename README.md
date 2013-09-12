@@ -12,7 +12,7 @@ This project is a set of Ansible Playbooks to configure instances to run some of
 - Genie (coming soon)
 - Ice (coming soon)
 - Lipstick (coming soon)
-- Simian Army (coming soon)
+- [Simian Army](#simian-army)
 
 ## Prerequisites
 
@@ -195,6 +195,47 @@ _NOTES_:
 1. This is not production quality. If the instance dies, you loose your history. This is meant as a quick way to get Edda up and running and see if you like it. Have a look at [this wiki page for running Edda in production](https://github.com/Netflix/edda/wiki/Resiliency).
 1. The default configuration for Edda will only look at the `us-east-1` region. You can change `edda.region` config parameter (and other [configuration settings](https://github.com/Netflix/edda/wiki/Configuration#wiki-eddaregion)) by editing `/usr/local/tomcat/webapps/edda/WEB-INF/classes/edda.properties`.
 ## Feedback
+
+
+### Simian Army
+
+The [Simian Army](https://github.com/Netflix/SimianArmy) are tools for keeping your cloud operating in top form. For example, Chaos Monkey is a resiliency tool that helps applications tolerate random instance failures. Before running the playbook, there are a few things we need to do:
+
+1. Create a Simian Army [IAM Role](https://console.aws.amazon.com/iam/home?#roles) with [this policy](https://github.com/Answers4AWS/netflixoss-ansible/blob/master/cloudformation/simian-army.json#L82)
+1. Create a Simian Army security group
+ - Allow port 22 for SSH
+ - Allow port 80 for REST access only from your own IP address
+1. Create a new Key pair (if you don't already one) and add it to your keychain or SSH agent so you don't need to specify it later:
+```
+$ ssh-add mykey.pem
+```
+1. Launch a new EC2 instance using the above IAM Role, Security Group and key pair. Use Ubuntu 12.04 LTS as the AMI.
+1. Set the `Name` tag of the instance to `SimianArmy`
+1. Confirm you can see the instance using the Ansible EC2 inventory
+```
+$ /etc/ansible/hosts | grep 'SimianArmy'
+```
+
+Now you can run the playbook
+
+```
+$ ansible-playbook playbooks/simian-army-ubuntu.yml -l 'tag_Name_SimianArmy'
+```
+
+Once the playbook is finished, you can SSH to the instance an start configure the Simian Army. Example:
+
+```
+ssh ubuntu@ec2.xyz
+cd /usr/local/tomcat/webapps/simianarmy/WEB-INF/classes/
+sudo emacs chaos.properties
+sudo service tomcat7 restart
+```
+
+The log files are located at `/var/log/tomcat7`, with `catalina.out` being the main one.
+
+If all of that seems too hard, feel free to use the [Simian Army CloudFormation template](https://github.com/Answers4AWS/netflixoss-ansible/blob/master/cloudformation/simian-army.json) to bring up the Simian Army in just a few clicks.
+
+
 
 If you have feedback, comments or suggestions, please feel free to contact Peter at Answers for AWS, create an Issue, or submit a pull request.
 
