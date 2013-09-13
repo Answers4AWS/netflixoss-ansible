@@ -1,5 +1,8 @@
 ---
 # Edda role
+- name: Stopping tomcat7 service
+  service: name=tomcat7 state=stopped
+
 - name: Copy local Edda WAR file $local_war
   copy: src=$local_war dest=/usr/local/tomcat/webapps/edda.war
   when_string: $local_war != ""
@@ -9,4 +12,34 @@
   get_url: url=$latest_successful_build_url dest=/usr/local/tomcat/webapps/edda.war
   when_string: $local_war == ""
   tags: deploy
+  
+- name: Remove any old version
+  file: path=/usr/local/tomcat/webapps/edda state=absent
+  notify: restart tomcat
+  tags: deploy
+  
+- name: Create Edda deployment directory
+  file: path=/usr/local/tomcat/webapps/edda state=directory
+  tags: deploy
+
+- name: Decompress Edda WAR file
+  command: chdir=/usr/local/tomcat/webapps/edda unzip ../edda.war
+  notify: restart tomcat
+  tags: deploy
+  
+- name: Remove source WAR file
+  file: path=/usr/local/tomcat/webapps/edda.war state=absent
+  tags: deploy
+
+- name: Copy configuration script
+  copy: src=configure-edda.sh dest=/usr/bin/configure-edda.sh owner=root group=root mode=0755
+  notify: run rc.local
+  tags:
+   - rc
+   - config
+
+- name: Add configuration script to rc.local
+  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" regexp="configure-edda" line="/usr/bin/configure-edda.sh"
+  notify: run rc.local
+  tags: rc
   
