@@ -46,10 +46,11 @@ sudo -E apt-get install --no-install-recommends -y \
  xfsprogs
 
 # This is here because we need ec2-copy-snapshot
-if [ ! -e ec2-api-tools_1.6.6.0-0ubuntu1_all.deb ]; then
+if [ ! -e /tmp/ec2-api-tools_1.6.6.0-0ubuntu1_all.deb ]; then
+	cd /tmp
 	wget http://mirrors.us.kernel.org/ubuntu/pool/multiverse/e/ec2-api-tools/ec2-api-tools_1.6.6.0-0ubuntu1_all.deb
 fi
-sudo dpkg -i ec2-api-tools_1.6.6.0-0ubuntu1_all.deb
+sudo dpkg -i /tmp/ec2-api-tools_1.6.6.0-0ubuntu1_all.deb
 
 # Download base Ubuntu server image built by Canonical
 image=/mnt/$imagename.img
