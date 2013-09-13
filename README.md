@@ -207,7 +207,7 @@ _NOTES_:
 ```
 $ ssh-add mykey.pem
 ```
-1. Enable programmatic billing access on your AWS account, and take note of the bucket name
+1. [Enable programmatic billing access](http://docs.aws.amazon.com/awsaccountbilling/latest/about/programaccess.html) on your AWS account, and take note of the bucket name
 1. Create another S3 bucket that will be used as a workspace for Ice.
 1. Create an Ice [IAM Role](https://console.aws.amazon.com/iam/home?#roles) that allows S3 read access to your billing bucket, and read and write access to the S3 working space bucket. It will also need read-only access to EC2 for things like describing reserved instance offerings. A samply policy (that probably gives more access than necessary) is available [in this repository](https://github.com/Answers4AWS/netflixoss-ansible/blob/master/playbooks/roles/ice/files/samply-ice.policy).
 1. Launch a new EC2 instance using the above Security Group, key pair and IAM role. You can use either Ubuntu or Amazon Linux.
