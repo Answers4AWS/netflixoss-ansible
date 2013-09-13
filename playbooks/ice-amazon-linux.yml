@@ -1,0 +1,16 @@
+---
+# Ice playbook for Amazon Linux
+- name: Ice
+  user: ec2-user
+  sudo: True
+  tags: ice
+  hosts: all
+  roles:
+    - base
+    - tomcat
+    - ice
+  vars:
+    local_war: "" 
+  vars_files:
+    - vars/$ansible_distribution.yml
+  

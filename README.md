@@ -9,8 +9,8 @@ This project is a set of Ansible Playbooks to configure instances to run some of
 - [Asgard](#asgard)
 - [Edda](#edda)
 - [Eureka](#eureka)
-- Genie (coming soon)
-- Ice (coming soon)
+- Genie (started, but not complete)
+- [Ice](#ice)
 - Lipstick (coming soon)
 - [Simian Army](#simian-army)
 
@@ -194,7 +194,49 @@ _NOTES_:
 
 1. This is not production quality. If the instance dies, you loose your history. This is meant as a quick way to get Edda up and running and see if you like it. Have a look at [this wiki page for running Edda in production](https://github.com/Netflix/edda/wiki/Resiliency).
 1. The default configuration for Edda will only look at the `us-east-1` region. You can change `edda.region` config parameter (and other [configuration settings](https://github.com/Netflix/edda/wiki/Configuration#wiki-eddaregion)) by editing `/usr/local/tomcat/webapps/edda/WEB-INF/classes/edda.properties`.
-## Feedback
+
+
+### Ice
+
+[Ice](https://github.com/Netflix/ice) provides a birds-eye view of your AWS usage and costs. Before running the playbook, there are a few things we need to do:
+
+1. Create an Ice security group
+ - Allow port 22 for SSH
+ - Allow port 80 for HTTP
+1. If you don't already have one, create a new Key Pair, and add it to your keychain or SSH agent so you don't need to specify it later:
+```
+$ ssh-add mykey.pem
+```
+1. Enable programmatic billing access on your AWS account, and take note of the bucket name
+1. Create another S3 bucket that will be used as a workspace for Ice.
+1. Create an Ice [IAM Role](https://console.aws.amazon.com/iam/home?#roles) that allows S3 read access to your billing bucket, and read and write access to the S3 working space bucket. It will also need read-only access to EC2 for things like describing reserved instance offerings. A samply policy (that probably gives more access than necessary) is available [in this repository]().
+1. Launch a new EC2 instance using the above Security Group and key pair. You can use either Ubuntu or Amazon Linux.
+1. Set the `Name` tag of the instance to `Ice`
+1. Confirm you can see the instance using the Ansible EC2 inventory
+```
+$ /etc/ansible/hosts | grep 'Ice'
+```
+
+Now you can run the playbook
+
+```
+$ ansible-playbook playbooks/ice-amazon-linux.yml -l 'tag_Name_Ice'
+```
+
+This will configure the instance to be running the 
+[latest snapshot build](https://netflixoss.ci.cloudbees.com/job/ice-master/lastSuccessfulBuild/artifact/target/ice.war)
+of Ice. If you prefer to build your own WAR file yourself, just specify the path to the WAR file:
+
+```
+$ ansible-playbook playbooks/ice-amazon-linux.yml -l 'tag_Name_Ice' -e "local_war=$HOME/Downloads/ice.war"
+```
+
+Once the playbook is finished, you will have Ice running inside Tomcat on your EC2 instance. You can access it via HTTP. Example:
+
+```
+http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com/
+```
+
 
 
 ### Simian Army
@@ -236,6 +278,7 @@ The log files are located at `/var/log/tomcat7`, with `catalina.out` being the m
 If all of that seems too hard, feel free to use the [Simian Army CloudFormation template](https://github.com/Answers4AWS/netflixoss-ansible/blob/master/cloudformation/simian-army.json) to bring up the Simian Army in just a few clicks.
 
 
+## Feedback
 
 If you have feedback, comments or suggestions, please feel free to contact Peter at Answers for AWS, create an Issue, or submit a pull request.
 

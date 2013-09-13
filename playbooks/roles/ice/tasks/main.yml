@@ -24,7 +24,7 @@
   file: path=/usr/local/tomcat/webapps/ice state=absent
   tags: deploy
   
-- name: Create Ice deployment director
+- name: Create Ice deployment directory
   file: path=/usr/local/tomcat/webapps/ice state=directory
   tags: deploy
 
@@ -55,8 +55,10 @@
   notify: restart tomcat
   tags: config
   
-- name: Add ICE_HOME to environment
+- name: Add ICE_HOME to environment (apt version)
   lineinfile: dest=/etc/default/tomcat7 regexp="ICE_HOME" line="ICE_HOME=/usr/local/tomcat/webapps/ice/WEB-INF/classes/"
+  when_string: $ansible_distribution == 'Ubuntu'
   notify: restart tomcat
   tags: config
+
   

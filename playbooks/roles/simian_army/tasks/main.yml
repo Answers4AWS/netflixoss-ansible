@@ -24,7 +24,7 @@
   file: path=/usr/local/tomcat/webapps/simianarmy state=absent
   tags: deploy
   
-- name: Create Simian Army deployment director
+- name: Create Simian Army deployment directory
   file: path=/usr/local/tomcat/webapps/simianarmy state=directory
   tags: deploy
 
