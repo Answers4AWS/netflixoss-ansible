@@ -190,10 +190,11 @@ Once the playbook is finished, you will have Edda running inside Tomcat with Mon
 http://ec2-12-212-12-121.us-west-2.compute.amazonaws.com/edda/api/v2/view/instances;_pp
 ```
 
+If all of that seems too hard, feel free to use the [Edda CloudFormation template](https://github.com/Answers4AWS/netflixoss-ansible/blob/master/cloudformation/edda.json) to bring it up in just a few clicks.
+
 _NOTES_:
 
 1. This is not production quality. If the instance dies, you loose your history. This is meant as a quick way to get Edda up and running and see if you like it. Have a look at [this wiki page for running Edda in production](https://github.com/Netflix/edda/wiki/Resiliency).
-1. The default configuration for Edda will only look at the `us-east-1` region. You can change `edda.region` config parameter (and other [configuration settings](https://github.com/Netflix/edda/wiki/Configuration#wiki-eddaregion)) by editing `/usr/local/tomcat/webapps/edda/WEB-INF/classes/edda.properties`.
 
 
 ### Ice
