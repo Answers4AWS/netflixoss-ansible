@@ -281,7 +281,7 @@ If all of that seems too hard, feel free to use the [Simian Army CloudFormation 
 
 ## Feedback
 
-If you have feedback, comments or suggestions, please feel free to contact Peter at Answers for AWS, create an Issue, or submit a pull request.
+If you have feedback, comments or suggestions, please feel free to contact Peter at Answers for AWS, create an [Issue](https://github.com/Answers4AWS/netflixoss-ansible/issues), or submit a pull request.
 
 ## About Answers for AWS
 
