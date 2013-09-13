@@ -22,32 +22,32 @@
   "Mappings":{
     "AWSRegion2AMI":{
       "us-east-1":{
-        "ami":"ami-00d59369"
+        "ami":"ami-9deca5f4"
       },
       "us-west-1":{
-        "ami":"ami-0aa68d4f"
+        "ami":"ami-880633cd"
       },
       "us-west-2":{
-        "ami":"ami-35821f05"
+        "ami":"ami-bef9668e"
       },
       "eu-west-1":{
-        "ami":"ami-a96971dd"
+        "ami":"ami-8c799cfb"
       },
       "sa-east-1":{
-        "ami":"ami-5368cc4e"
+        "ami":"ami-8da50290"
       },
       "ap-southeast-1":{
-        "ami":"ami-36ace464"
+        "ami":"ami-2c90db7e"
       },
       "ap-southeast-2":{
-        "ami":"ami-734ddf49"
+        "ami":"ami-8d8f12b7"
       },
       "ap-northeast-1":{
-        "ami":"ami-e9af3fe8"
+        "ami":"ami-05950904"
       }
     }
   },
-  
+
   "Resources" : {
     "AminatorIamRole":{
       "Type":"AWS::IAM::Role",
