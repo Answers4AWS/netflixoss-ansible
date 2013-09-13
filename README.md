@@ -9,7 +9,7 @@ This project is a set of Ansible Playbooks to configure instances to run some of
 - [Asgard](#asgard)
 - [Edda](#edda)
 - [Eureka](#eureka)
-- Genie (started, but not complete)
+- Genie (started, but not yet complete)
 - [Ice](#ice)
 - Lipstick (coming soon)
 - [Simian Army](#simian-army)
@@ -112,7 +112,7 @@ $ ansible-playbook playbooks/asgard-ubuntu.yml -l 'tag_Name_Asgard' -e "local_wa
 Once the playbook is finished, you will have Asgard running inside Tomcat on your EC2 instance. You can access Asgard via HTTP as the ROOT application (no directory). Example:
 
 ```
-http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com/
+http://ec2-12-12-12-12.us-west-2.compute.amazonaws.com/
 ```
 
 ### Eureka
@@ -148,7 +148,7 @@ $ ansible-playbook playbooks/eureka-amazon-linux.yml -l 'tag_Name_Eureka' -e "lo
 Once the playbook is finished, you will have Eureka Server running inside Tomcat on your EC2 instance. You can access it via HTTP. Example:
 
 ```
-http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com/eureka/
+http://ec2-12-23-34-45.us-west-1.compute.amazonaws.com/eureka/
 ```
 
 ### Edda
@@ -209,14 +209,15 @@ $ ssh-add mykey.pem
 ```
 1. Enable programmatic billing access on your AWS account, and take note of the bucket name
 1. Create another S3 bucket that will be used as a workspace for Ice.
-1. Create an Ice [IAM Role](https://console.aws.amazon.com/iam/home?#roles) that allows S3 read access to your billing bucket, and read and write access to the S3 working space bucket. It will also need read-only access to EC2 for things like describing reserved instance offerings. A samply policy (that probably gives more access than necessary) is available [in this repository]().
-1. Launch a new EC2 instance using the above Security Group and key pair. You can use either Ubuntu or Amazon Linux.
+1. Create an Ice [IAM Role](https://console.aws.amazon.com/iam/home?#roles) that allows S3 read access to your billing bucket, and read and write access to the S3 working space bucket. It will also need read-only access to EC2 for things like describing reserved instance offerings. A samply policy (that probably gives more access than necessary) is available [in this repository](https://github.com/Answers4AWS/netflixoss-ansible/blob/master/playbooks/roles/ice/files/samply-ice.policy).
+1. Launch a new EC2 instance using the above Security Group, key pair and IAM role. You can use either Ubuntu or Amazon Linux.
 1. Set the `Name` tag of the instance to `Ice`
 1. Confirm you can see the instance using the Ansible EC2 inventory
 ```
 $ /etc/ansible/hosts | grep 'Ice'
 ```
-
+1. OK, the instance is now ready. Before running the playbook, [edit the variables file](https://github.com/Answers4AWS/netflixoss-ansible/blob/master/playbooks/roles/ice/vars/main.yml) and fill in the values for bucket names and the like. The file is documented.
+ 
 Now you can run the playbook
 
 ```
@@ -234,7 +235,7 @@ $ ansible-playbook playbooks/ice-amazon-linux.yml -l 'tag_Name_Ice' -e "local_wa
 Once the playbook is finished, you will have Ice running inside Tomcat on your EC2 instance. You can access it via HTTP. Example:
 
 ```
-http://ec2-54-245-157-159.us-west-2.compute.amazonaws.com/
+http://ec2-123-123-123-123.compute.amazonaws.com/dashboard/summary
 ```
 
 
