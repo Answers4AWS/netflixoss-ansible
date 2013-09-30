@@ -173,7 +173,7 @@ echo
 echo "Installing Ansible"
 sudo -E chroot $ebsimagedir add-apt-repository -y ppa:rquillo/ansible
 sudo -E chroot $ebsimagedir apt-get update
-sudo -E chroot $ebsimagedir apt-get install ansible
+sudo -E chroot $ebsimagedir apt-get install -y ansible
 
 echo
 echo "DONE"
