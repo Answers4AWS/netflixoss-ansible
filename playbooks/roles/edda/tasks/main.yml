@@ -3,14 +3,14 @@
 - name: Stopping tomcat7 service
   service: name=tomcat7 state=stopped
 
-- name: Copy local Edda WAR file $local_war
-  copy: src=$local_war dest=/usr/local/tomcat/webapps/edda.war
-  when_string: $local_war != ""
+- name: Copy local Edda WAR file {{ local_war }}
+  copy: src={{ local_war }} dest=/usr/local/tomcat/webapps/edda.war
+  when: local_war != ""
   tags: deploy
   
 - name: Download snapshot build of Edda from Cloudbees
-  get_url: url=$latest_successful_build_url dest=/usr/local/tomcat/webapps/edda.war
-  when_string: $local_war == ""
+  get_url: url={{ latest_successful_build_url }} dest=/usr/local/tomcat/webapps/edda.war
+  when: local_war == ""
   tags: deploy
   
 - name: Remove any old version
@@ -39,7 +39,7 @@
    - config
 
 - name: Add configuration script to rc.local
-  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" regexp="configure-edda" line="/usr/bin/configure-edda.sh"
+  lineinfile: dest={{ rc_local_path }}  insertbefore="^# ADD HERE" regexp="configure-edda" line="/usr/bin/configure-edda.sh"
   notify: run rc.local
   tags: rc
   

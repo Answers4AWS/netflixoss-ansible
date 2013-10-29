@@ -1,3 +1,4 @@
 ---
-ami_build: "'$ami' == 'yes'"
+ami_build: ami is defined and ami 
+not_ami_build: ami is not defined or not ami
 latest_successful_build_url: https://netflixoss.ci.cloudbees.com/job/edda-master/lastSuccessfulBuild/artifact/build/libs/edda-2.1-SNAPSHOT.war

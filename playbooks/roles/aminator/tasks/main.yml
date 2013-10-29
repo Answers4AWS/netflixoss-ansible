@@ -1,7 +1,7 @@
 ---
 # Aminator role
 - name: Install Python libraries
-  pip: name=$item state=latest
+  pip: name={{ item }} state=latest
   with_items:
     - distribute
     - setuptools
@@ -22,15 +22,15 @@
   tags: dirs
   
 - name: Checkout Aminator code from Github
-  git: repo=$aminator_repo
+  git: repo={{ aminator_repo }}
        dest=/usr/local/aminator
-       version=$aminator_branch
+       version={{ aminator_branch }}
 
 - name: Install Aminator
   command: python setup.py install chdir=/usr/local/aminator
 
 - name: Copy config files
-  command: cp /usr/local/aminator/aminator/default_conf/$item /etc/aminator/$item
+  command: cp /usr/local/aminator/aminator/default_conf/{{ item }} /etc/aminator/{{ item }}
   with_items:
     - aminator.yml
     - environments.yml
@@ -45,7 +45,7 @@
   copy: src=pull-latest-netflixoss-ansible.sh dest=/usr/bin/pull-latest-netflixoss-ansible.sh owner=root group=root mode=0755
 
 - name: Add repo updating script to rc.local
-  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" regexp="pull-latest-netflixoss-ansible" line="/usr/bin/pull-latest-netflixoss-ansible.sh"
+  lineinfile: dest={{ rc_local_path }}  insertbefore="^# ADD HERE" regexp="pull-latest-netflixoss-ansible" line="/usr/bin/pull-latest-netflixoss-ansible.sh"
   
 - name: Install DistAMI
   pip: name=distami state=latest

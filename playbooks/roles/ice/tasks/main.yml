@@ -10,14 +10,14 @@
   notify: restart tomcat
   tags: deploy
 
-- name: Copy local Ice WAR file $local_war
-  copy: src=$local_war dest=/usr/local/tomcat/webapps/ice.war
-  when_string: $local_war != ""
+- name: Copy local Ice WAR file {{ local_war }}
+  copy: src={{ local_war }} dest=/usr/local/tomcat/webapps/ice.war
+  when: local_war != ""
   tags: deploy
   
 - name: Download snapshot build of Ice from Cloudbees
-  get_url: url=$latest_successful_build_url dest=/usr/local/tomcat/webapps/ice.war
-  when_string: $local_war == ""
+  get_url: url={{ latest_successful_build_url }} dest=/usr/local/tomcat/webapps/ice.war
+  when: local_war == ""
   tags: deploy
   
 - name: Remove any old version
@@ -46,7 +46,7 @@
    - config
 
 - name: Add configuration script to rc.local
-  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" regexp="configure-ice" line="/usr/bin/configure-ice.sh"
+  lineinfile: dest={{ rc_local_path }}  insertbefore="^# ADD HERE" regexp="configure-ice" line="/usr/bin/configure-ice.sh"
   notify: run rc.local
   tags: rc
 
@@ -57,7 +57,7 @@
   
 - name: Add ICE_HOME to environment (apt version)
   lineinfile: dest=/etc/default/tomcat7 regexp="ICE_HOME" line="ICE_HOME=/usr/local/tomcat/webapps/ice/WEB-INF/classes/"
-  when_string: $ansible_distribution == 'Ubuntu'
+  when: ansible_distribution == 'Ubuntu'
   notify: restart tomcat
   tags: config
 

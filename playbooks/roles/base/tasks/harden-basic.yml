@@ -2,7 +2,7 @@
 # Basic hardening of any linux system
 
 - name: Remove unnecessary users
-  user: name=$item state=absent
+  user: name={{ item }} state=absent
   with_items:
     - games
     - gnats
@@ -13,7 +13,7 @@
     - uucp
   
 - name: Set shell to nologin for users
-  user: name=$item shell=/usr/sbin/nologin
+  user: name={{ item }} shell=/usr/sbin/nologin
   with_items:
     - daemon
     - bin
@@ -24,10 +24,10 @@
     - backup
     - nobody
     - libuuid
-  when_string: $ansible_distribution == 'Ubuntu'
+  when: ansible_distribution == 'Ubuntu'
   
 - name: Remove unnecessary groups
-  group: name=$item state=absent
+  group: name={{ item }} state=absent
   with_items:
     - news
     - uucp

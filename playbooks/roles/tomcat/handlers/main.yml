@@ -1,9 +1,9 @@
 ---
 - name: restart tomcat
   service: name=tomcat7 state=restarted
-  only_if: 'not $ami_build'
+  when: not_ami_build
 
 - name: run rc.local
   command: /etc/rc.local
-  only_if: 'not $ami_build'
+  when: not_ami_build
     

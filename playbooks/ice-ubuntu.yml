@@ -12,4 +12,4 @@
   vars:
     local_war: "" 
   vars_files:
-    - vars/$ansible_distribution.yml
+    - vars/{{ ansible_distribution }}.yml

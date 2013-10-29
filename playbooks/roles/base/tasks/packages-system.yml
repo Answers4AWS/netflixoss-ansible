@@ -2,7 +2,7 @@
 # Install some helpful system packages
 
 - name: Install system packages (apt version)
-  apt: pkg=$item state=latest
+  apt: pkg={{ item }} state=latest
   with_items:
     - git-core
     - less
@@ -16,10 +16,10 @@
     - unzip
     - xfsprogs
     - zip
-  when_string: $ansible_distribution == 'Ubuntu'
+  when: ansible_distribution == 'Ubuntu'
 
 - name: Install system packages (yum version)
-  yum: pkg=$item state=latest
+  yum: pkg={{ item }} state=latest
   with_items:
     - git
     - less
@@ -31,7 +31,7 @@
     - unzip
     - xfsprogs
     - zip
-  when_string: $ansible_distribution == 'Amazon'
+  when: ansible_distribution == 'Amazon'
 
 - name: Install boto Python library
   pip: name=boto state=latest
@@ -44,18 +44,10 @@
 
 # Get the super handy ec2metadata script over there
 - name: Copy ec2metadata script
-  copy: src=$ansible_distribution/ec2metadata dest=/usr/bin/ec2metadata owner=root group=root mode=0755
-  when_string: $ansible_distribution == 'Amazon'
+  copy: src={{ ansible_distribution }}/ec2metadata dest=/usr/bin/ec2metadata owner=root group=root mode=0755
+  when: ansible_distribution == 'Amazon'
   tags: ec2metadata
 
 - name: Copy rc.local template
-  copy: src=${ansible_distribution}/rc.local dest=$rc_local_path owner=root group=root mode=0755
-
-- name: Copy over AMI analytics script
-  copy: src=abl.py dest=/usr/bin/abl.py owner=root group=root mode=0755
-  only_if: '$ami_build'
-
-- name: Add AMI analytics to rc.local
-  lineinfile: dest=$rc_local_path insertbefore="^# ADD HERE" regexp="abl\.py" line='/usr/bin/abl.py'
-  only_if: '$ami_build'
+  copy: src={{ ansible_distribution }}/rc.local dest={{ rc_local_path }}  owner=root group=root mode=0755
   

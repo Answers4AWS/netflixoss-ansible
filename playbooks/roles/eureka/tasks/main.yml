@@ -1,12 +1,12 @@
 ---
 # Eureka role
-- name: Copy local Eureka WAR file $local_war
-  copy: src=$local_war dest=/usr/local/tomcat/webapps/eureka.war
-  when_string: $local_war != ""
+- name: Copy local Eureka WAR file {{ local_war }}
+  copy: src={{ local_war }} dest=/usr/local/tomcat/webapps/eureka.war
+  when: local_war != ""
   tags: deploy
   
 - name: Download snapshot build of Eureka from Cloudbees
-  get_url: url=$latest_successful_build_url dest=/usr/local/tomcat/webapps/eureka.war
-  when_string: $local_war == ""
+  get_url: url={{ latest_successful_build_url }} dest=/usr/local/tomcat/webapps/eureka.war
+  when: local_war == ""
   tags: deploy
   
