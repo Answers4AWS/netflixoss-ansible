@@ -1,12 +1,38 @@
 ---
 # Genie role
+- name: Copy tomcat server.xml file
+  copy: src=server.xml dest=/usr/local/tomcat/conf/server.xml owner=root group=root mode=0644
+  notify: restart tomcat
+
+- name: Remove default root webapp
+  file: path=/usr/local/tomcat/webapps/ROOT state=absent
+  
+- name: Create Genie directory
+  file: path=/mnt/tomcat/genie-jobs state=directory owner={{ tomcat_user }} group={{ tomcat_user }} mode=0755
+
+- name: Symlink genie-jobs to webapps
+  file: src=/mnt/tomcat/genie-jobs dest=/usr/local/tomcat/webapps/genie-jobs state=link
+
+- name: Ensure Pig conf directory exists
+  file: path=/home/hadoop/.versions/pig-0.11.1/conf state=directory owner={{ tomcat_user }} group={{ tomcat_user }} mode=0755
+  
+  # This is because Derby DB needs to be created
+- name: Make tomcat directory writable by tomcat
+  file: path=/var/lib/tomcat7 state=directory owner={{ tomcat_user }} group={{ tomcat_user }} mode=0755
+  tags: db
+ 
+- name: Ensure the pig.properties file exists
+  # TODO: Replace with file state=touch after Ansible 1.4 is released
+  command: touch /home/hadoop/.versions/pig-0.11.1/conf/pig.properties
+
 - name: Copy local Genie WAR file {{ local_war }}
-  copy: src={{ local_war }} dest=/usr/local/tomcat/webapps/genie.war
+  copy: src={{ local_war }} dest=/usr/local/tomcat/webapps/ROOT.war
   when: local_war != ""
   tags: deploy
   
 - name: Download snapshot build of Genie from Cloudbees
-  get_url: url={{ latest_successful_build_url }} dest=/usr/local/tomcat/webapps/genie.war
+  get_url: url={{ latest_successful_build_url }} dest=/usr/local/tomcat/webapps/ROOT.war
   when: local_war == ""
   tags: deploy
+  notify: restart tomcat
   

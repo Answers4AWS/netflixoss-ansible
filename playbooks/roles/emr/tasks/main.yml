@@ -1,0 +1,4 @@
+---
+# EMR role
+- name: Install python-apt
+  command: apt-get install -y python-apt

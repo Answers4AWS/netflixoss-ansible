@@ -8,6 +8,12 @@
     - libapr1
   when: ansible_distribution == 'Ubuntu'
   
+- name: Install Apache Tomcat 7 (Debian apt version)
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - tomcat7
+  when: ansible_distribution == 'Debian'
+  
 - name: Install Apache Tomcat 7 (yum version)
   yum: pkg={{ item }} state=latest
   with_items:
@@ -17,20 +23,24 @@
     
 - name: Symlink to /usr/local/tomcat
   file: dest=/usr/local/tomcat state=link src=/var/lib/tomcat7
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
   
 - name: Symlink to /usr/local/tomcat
   file: dest=/usr/local/tomcat state=link src=/usr/share/tomcat7
   when: ansible_distribution == 'Amazon'
   
+- name: Symlink Java (Debian)
+  file: src=/usr/lib/jvm/java-7-oracle dest=/usr/lib/jvm/default-java state=link
+  when: ansible_distribution == 'Debian'
+  
 - name: Fix webapps permissions so tomcat can deploy
   file: dest=/usr/local/tomcat/webapps state=directory owner={{ tomcat_user }}  group={{ tomcat_user }}  mode=0775
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
 
 - name: Tomcat service config
   template: src=default.j2 dest=/etc/default/tomcat7 owner=root group=root mode=0644
   notify: restart tomcat
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
 
 - name: Tomcat service config  
   template: src=tomcat7.conf.j2 dest=/etc/tomcat7/tomcat7.conf owner={{ tomcat_user }}  group={{ tomcat_user }}  mode=644
@@ -40,11 +50,13 @@
 - name: Copy port forwarding script
   copy: src=port-forward-8080-to-80.sh dest=/usr/bin/port-forward-8080-to-80.sh owner=root group=root mode=0755
   notify: run rc.local
+  when: not tomcat_skip_port_forwarding
   tags: rc
 
 - name: Add port forwarding script to rc.local
   lineinfile: dest={{ rc_local_path }}  insertbefore="^# ADD HERE" regexp="port-forward-8080-to-80" line="/usr/bin/port-forward-8080-to-80.sh"
   notify: run rc.local
+  when: not tomcat_skip_port_forwarding
   tags: rc
   
 - name: Starting tomcat7 service

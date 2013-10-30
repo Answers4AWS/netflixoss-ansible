@@ -1,0 +1,19 @@
+---
+# Genie playbook for EMR
+- name: Genie
+  user: hadoop
+  sudo: True
+  tags: genie
+  hosts: all
+  roles:
+#    - base
+    - emr
+    - tomcat
+    - genie
+  vars:
+    local_war: ""
+    tomcat_port: 7001
+    tomcat_extra_opts: "-Darchaius.deployment.applicationId=genie -Dnetflix.datacenter=cloud -Dnetflix.genie.server.sys.home=/usr/local/tomcat/webapps/ROOT/genie-web/conf/system/apps/genie/bin"
+    tomcat_skip_port_forwarding: True
+  vars_files:
+    - vars/{{ ansible_distribution }}.yml
