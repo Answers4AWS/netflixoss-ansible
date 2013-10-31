@@ -59,10 +59,6 @@
   when: not tomcat_skip_port_forwarding|default(False)
   tags: rc
   
-- name: Starting tomcat7 service
-  service: name=tomcat7 state=started
-  when: not_ami_build
-  
 - name: Stopping tomcat7 service
   service: name=tomcat7 state=stopped
   when: ami_build

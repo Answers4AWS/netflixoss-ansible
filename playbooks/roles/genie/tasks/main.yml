@@ -1,5 +1,8 @@
 ---
 # Genie role
+- name: Stopping tomcat7 service
+  service: name=tomcat7 state=stopped
+
 - name: Copy tomcat server.xml file
   copy: src=server.xml dest=/usr/local/tomcat/conf/server.xml owner=root group=root mode=0644
 
