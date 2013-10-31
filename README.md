@@ -210,8 +210,9 @@ _NOTES_:
     -  Make sure the master node is at least an `m1.medium` so that Tomcat has enough RAM to run
     -  Get EMR to install Hive 0.11
     -  Get EMR to Install Pig 0.11.1
-1.  Modify the `ElasticMapReduce-master` security group
-    -  Allow port 7001 access from your IP address only
+1.  Either: 
+    -  modify the `ElasticMapReduce-master` security group and allow port 7001 access from your IP address only
+    -  OR, set up a [proxy to the Elastic MapReduce master](http://answersforaws.com/episodes/1-foxyproxy/) and access it that way
 1.  Go to the EC2 page, and set the `Name` tag of the master node to `Genie`
 1.  Confirm you can see the instance using the Ansible EC2 inventory
 

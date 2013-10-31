@@ -141,6 +141,7 @@
     "AminatorLaunchConfig":{
       "Type":"AWS::AutoScaling::LaunchConfiguration",
       "Properties":{
+        "AssociatePublicIpAddress": true,
         "KeyName":{
           "Ref":"KeyName"
         },

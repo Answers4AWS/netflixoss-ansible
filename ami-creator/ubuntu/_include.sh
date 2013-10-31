@@ -63,7 +63,7 @@ fi
 
 # AMI name and description
 name="$brand-ubuntu-$release-$arch2-ebs-$now"
-description="${brand^} on Ubuntu $release by AWS Answers"
+description="${brand^} on Ubuntu $release - AMI by Answers for AWS"
 
 # AMI details
 imagename=$codename-server-cloudimg-$arch2
