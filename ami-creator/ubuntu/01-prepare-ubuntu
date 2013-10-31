@@ -171,13 +171,13 @@ echo
 echo "Installing Ansible"
 sudo -E chroot $ebsimagedir add-apt-repository -y ppa:rquillo/ansible
 sudo -E chroot $ebsimagedir apt-get update
-sudo -E chroot $ebsimagedir apt-get install ansible
+sudo -E chroot $ebsimagedir apt-get install -y ansible
 
 echo
 echo "Copy over NetflixOSS-Ansible playbooks"
 sudo mkdir -p $ebsimagedir/$noss_ansible_dir
-sudo rsync -a ../../playbooks/ $ebsimagedir/$playbooks_dir/
-sudo rsync -a ../../inventory/ $ebsimagedir/$inventory_dir/
+sudo rsync -a /home/ubuntu/netflixoss-ansible/playbooks/ $ebsimagedir/$playbooks_dir/
+sudo rsync -a /home/ubuntu/netflixoss-ansible/inventory/ $ebsimagedir/$inventory_dir/
 
 echo
 echo "DONE"

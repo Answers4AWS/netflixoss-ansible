@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion":"2010-09-09",
-  "Description":"Foundation AMI maker by Answers for AWS",
+  "Description":"A manual AMI baker instance - by Answers for AWS",
   "Parameters":{
     "InstanceType":{
       "Description":"Type of EC2 instances to launch",
@@ -22,28 +22,28 @@
   "Mappings":{
     "AWSRegion2AMI":{
       "us-east-1":{
-        "ami":"ami-80b5f3e9"
+        "ami":"ami-69f5a900"
       },
       "us-west-1":{
-        "ami":"ami-1aad865f"
+        "ami":"ami-ecd8efa9"
       },
       "us-west-2":{
-        "ami":"ami-9f8518af"
+        "ami":"ami-30079e00"
       },
       "eu-west-1":{
-        "ami":"ami-017b6375"
+        "ami":"ami-e21dfd95"
       },
       "sa-east-1":{
-        "ami":"ami-dd6dc9c0"
+        "ami":"ami-5bac0a46"
       },
       "ap-southeast-1":{
-        "ami":"ami-be97dfec"
+        "ami":"ami-76134624"
       },
       "ap-southeast-2":{
-        "ami":"ami-ef4edcd5"
+        "ami":"ami-cd8b17f7"
       },
       "ap-northeast-1":{
-        "ami":"ami-c9b929c8"
+        "ami":"ami-c933a8c8"
       }
     }
   },
@@ -137,7 +137,7 @@
         "SecurityGroupIds": [ { "Ref": "SecurityGroup" } ],
         "Tags" : [ {
           "Key" : "Name",
-          "Value" : "Foundation-maker"
+          "Value" : "amibaker"
         } ],
         "UserData":{
           "Fn::Base64":{
@@ -145,9 +145,9 @@
               "\n",
               [
                 "#!/bin/bash",
-                "echo 'Downloading Foundation AMI scripts from S3'",
-                "sudo -u ubuntu -H -i wget http://answers4aws.s3.amazonaws.com/foundation-ami-maker.tgz",
-                "sudo -u ubuntu -H -i tar xvzf foundation-ami-maker.tgz"
+                "apt-get update",
+                "apt-get install -y git-core",
+                "sudo -u ubuntu -H -i git clone git@github.com:Answers4AWS/netflixoss-ansible.git"
               ]
             ]
           }
@@ -158,7 +158,7 @@
     "SecurityGroup":{
       "Type":"AWS::EC2::SecurityGroup",
       "Properties":{
-        "GroupDescription":"Access to Foundation AMI maker",
+        "GroupDescription":"Access to manual AMI baker",
         "SecurityGroupIngress":[
           {
             "IpProtocol":"tcp",
@@ -195,11 +195,11 @@
     },
     "step002":{
       "Description":"Step 2: Create a Foundation EBS volume",
-      "Value":"./foundation-create-volume"
+      "Value":"./netflixoss-ansible/foundation-ami/ubuntu/foundation-create-volume"
     },
     "step003":{
       "Description":"Step 3: Create your Foundation AMI from the Foundation EBS volume",
-      "Value":"./foundation-create-ami"
+      "Value":"./netflixoss-ansible/foundation-ami/ubuntu/foundation-create-ami"
     }
   }
 }
