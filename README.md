@@ -1,6 +1,6 @@
 # NetflixOSS Ansible Playbooks
 
-[Ansible](https://github.com/ansible/ansible/) is a configuration management system that is [very simple to learn](http://www.ansibleworks.com/docs/gettingstarted.html) and use.
+[Ansible](https://github.com/ansible/ansible/) is a configuration management system that is [very simple to learn and use](http://answersforaws.com/episodes/2-ansible-and-aws/).
 
 This project is a set of Ansible Playbooks to configure instances to run some of the [NetflixOSS](http://netflix.github.io/) projects.
 
@@ -20,6 +20,8 @@ This project is a set of Ansible Playbooks to configure instances to run some of
 1. The [Ansible EC2 Inventory](http://www.ansibleworks.com/docs/api.html/#example-aws-ec2-external-inventory-script) configured
 1. Clone this repository
 
+For steps 1 and 2, [watch the first 3 minutes of Episode 2 - Ansible and AWS](http://answersforaws.com/episodes/2-ansible-and-aws/).
+
 ## Features
 
 These playbooks are built to be run on the following operating systems:
@@ -30,7 +32,7 @@ They have also been written in a way where you can use the same playbook to conf
 
 ### Base configuration
 
-The base configuration is gets a system ready for production. You can find the [base tasks here](https://github.com/awsanswers/noss-ansible/tree/master/playbooks/roles/base/tasks), but in summary it:
+The base configuration is gets a system ready for production. You can find the [base tasks here](https://github.com/Answers4AWS/noss-ansible/tree/master/playbooks/roles/base/tasks), but in summary it:
 - installs some packages
  - Python with the latest Boto
  - AWS CLI
@@ -43,6 +45,8 @@ The base configuration is gets a system ready for production. You can find the [
 ### Aminator
 
 [Aminator](https://github.com/Netflix/aminator) is a tool for creating EBS AMIs for AWS. Before running the playbook, there are a few things we need to do:
+
+[More detailed instructions for Aminator can be found here](http://answersforaws.com/code/netflixoss/aminator/)
 
 1. Create an Aminator [IAM Role](https://console.aws.amazon.com/iam/home?#roles) with [this policy](https://github.com/Netflix/aminator/wiki/Configuration#sample-policy)
 1. Create an Aminator security group
@@ -83,6 +87,8 @@ If all of that seems too hard, feel free to use the [Aminator CloudFormation tem
 
 [Asgard](https://github.com/Netflix/asgard) is an application deployments and cloud management web interface for AWS. Before running the playbook, there are a few things we need to do:
 
+[More detailed instructions for Asgard can be found here](http://answersforaws.com/code/netflixoss/asgard/)
+
 1. Create an Asgard security group
  - Allow port 22 for SSH
  - Allow port 80 for HTTP
@@ -119,6 +125,8 @@ http://ec2-12-12-12-12.us-west-2.compute.amazonaws.com/
 
 [Eureka](https://github.com/Netflix/eureka) is a service registry for resilient mid-tier load balancing and failover. Before running the playbook, there are a few things we need to do:
 
+[More detailed instructions for Eureka can be found here](http://answersforaws.com/code/netflixoss/eureka/)
+
 1. Create a Eureka security group
  - Allow port 22 for SSH
  - Allow port 80 for HTTP
@@ -154,6 +162,8 @@ http://ec2-12-23-34-45.us-west-1.compute.amazonaws.com/eureka/
 ### Edda
 
 [Edda](https://github.com/Netflix/edda) is a service to track changes in an AWS region, multiple regions and/or multiple accounts. Before running the playbook, there are a few things we need to do:
+
+[More detailed instructions for Edda can be found here](http://answersforaws.com/code/netflixoss/edda/)
 
 1. Create an Edda security group
  - Allow port 22 for SSH
@@ -201,6 +211,8 @@ _NOTES_:
 
 [Genie](https://github.com/Netflix/genie) is the NetflixOSS Hadoop Platform as a Service. It provides REST-ful APIs to run Hadoop, Hive and Pig jobs, and to manage multiple Hadoop resources and perform job submissions across them.
 
+[More detailed instructions for Genie can be found here](http://answersforaws.com/code/netflixoss/genie/)
+
 1.  If you don't already have one, create a new Key Pair, and add it to your keychain or SSH agent so you don't need to specify it later:
 
         $ ssh-add mykey.pem
@@ -237,6 +249,8 @@ Once the playbook is finished, you will have Genie running inside Tomcat on your
 ### Ice
 
 [Ice](https://github.com/Netflix/ice) provides a birds-eye view of your AWS usage and costs. Before running the playbook, there are a few things we need to do:
+
+[More detailed instructions for Ice can be found here](http://answersforaws.com/code/netflixoss/ice/)
 
 1. Create an Ice security group
  - Allow port 22 for SSH
@@ -281,6 +295,8 @@ http://ec2-123-123-123-123.compute.amazonaws.com/dashboard/summary
 ### Simian Army
 
 The [Simian Army](https://github.com/Netflix/SimianArmy) are tools for keeping your cloud operating in top form. For example, Chaos Monkey is a resiliency tool that helps applications tolerate random instance failures. Before running the playbook, there are a few things we need to do:
+
+[More detailed instructions for the Simian Army can be found here](http://answersforaws.com/code/netflixoss/simian-army/)
 
 1. Create a Simian Army [IAM Role](https://console.aws.amazon.com/iam/home?#roles) with [this policy](https://github.com/Answers4AWS/netflixoss-ansible/blob/master/cloudformation/simian-army.json#L82)
 1. Create a Simian Army security group
