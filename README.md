@@ -4,7 +4,7 @@
 
 This project is a set of Ansible Playbooks to configure instances to run some of the [NetflixOSS](http://netflix.github.io/) projects.
 
-- Archaius (coming soon)
+- Archaius (waiting on https://github.com/Netflix/archaius/issues/132)
 - [Aminator](#aminator)
 - [Asgard](#asgard)
 - [Edda](#edda)
