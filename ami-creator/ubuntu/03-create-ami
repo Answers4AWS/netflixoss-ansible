@@ -78,94 +78,12 @@ amiid=$(ec2-register                              \
 echo "Deleting EBS volume"
 ec2-delete-volume --region $region "$volumeid"
 
-
-# Copy snapshot to other 2 regions, and register AMI there too
-case "$region" in
-	us-east-1)
-		region1='us-west-1'
-		region2='us-west-2'
-		;;
-	us-west-1)
-		region1='us-east-1'
-		region2='us-west-2'
-		;;
-	us-west-2)
-		region1='us-east-1'
-		region2='us-west-1'
-		;;
-	*)
-		echo "ERROR: Unknown region"
-		exit 1
-esac
-echo
-
-if [ $copy_ami -eq 1 ]; then
-	echo "Coping snapshot to $region1"
-	snapshot1id=$(ec2-copy-snapshot -r $region -s $snapshotid --region $region1 -d "$description" | cut -f2)
-	while ec2-describe-snapshots --region $region1 "$snapshot1id" | grep -q pending
-	  do
-	  	echo -n "."
-	  	sleep 3
-	done
-	echo
-	
-	echo "Registering AMI in $region1"
-	akiid1=$(get_akiid $region1)
-	amiid1=$(ec2-register                              \
-  --name "$name"                                  \
-  --description "$description"                    \
-  --architecture "$arch"                          \
-  --kernel "$akiid1"                               \
-  --block-device-mapping $ephemeraldev=ephemeral0 \
-  --region $region1                                \
-  --snapshot "$snapshot1id" |
-	  cut -f2)
-	echo
-	
-	echo "Coping snapshot to $region2"
-	snapshot2id=$(ec2-copy-snapshot -r $region -s $snapshotid --region $region2 -d "$description" | cut -f2)
-	while ec2-describe-snapshots --region $region2 "$snapshot2id" | grep -q pending
-	  do
-	  	echo -n "."
-	  	sleep 3
-	done
-	echo
-	
-	echo "Registering AMI in $region2"
-	akiid2=$(get_akiid $region2)
-	amiid2=$(ec2-register                              \
-  --name "$name"                                  \
-  --description "$description"                    \
-  --architecture "$arch"                          \
-  --kernel "$akiid2"                               \
-  --block-device-mapping $ephemeraldev=ephemeral0 \
-  --region $region2                                \
-  --snapshot "$snapshot2id" |
-	  cut -f2)
-fi
-
 echo "Tagging snapshots"
 ec2-create-tags --region $region $snapshotid --tag Name="$tag_name AMI"
-if [ $copy_ami -eq 1 ]; then
-	ec2-create-tags --region $region1 $snapshot1id --tag Name="$tag_name AMI"
-	ec2-create-tags --region $region2 $snapshot2id --tag Name="$tag_name AMI"
-fi
 echo
 
 echo "Tagging AMIs"
 ec2-create-tags --region $region $amiid --tag Name="$tag_name"
-if [ $copy_ami -eq 1 ]; then
-	ec2-create-tags --region $region1 $amiid1 --tag Name="$tag_name"
-	ec2-create-tags --region $region2 $amiid2 --tag Name="$tag_name"
-fi
-echo
-
-echo "Make AMIs public"
-ec2-modify-image-attribute --region $region -l -a all $amiid
-if [ $copy_ami -eq 1 ]; then
-	ec2-modify-image-attribute --region $region1 -l -a all $amiid1
-	ec2-modify-image-attribute --region $region2 -l -a all $amiid2
-fi
 echo
 
 cat <<EOF
