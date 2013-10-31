@@ -208,8 +208,8 @@ _NOTES_:
 1.  Launch an Elastic MapReduce (EMR) Cluster using the above Key Pair
     -  Use the 2.4.2 AMI
     -  Make sure the master node is at least an `m1.medium` so that Tomcat has enough RAM to run
-    -  Install Hive 0.11 as a Bootstrap Action
-    -  Install Pig 0.11 as a Bootstrap Action
+    -  Get EMR to install Hive 0.11
+    -  Get EMR to Install Pig 0.11
 1.  Modify the `ElasticMapReduce-master` security group
     - Allow port 7001 access from your IP address only
 1.  Go to the EC2 page, and set the `Name` tag of the master node to `Genie`

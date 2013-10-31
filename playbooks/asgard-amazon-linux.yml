@@ -11,6 +11,7 @@
     - asgard
   vars:
     local_war: "" 
+    tomcat_extra_opts: "-Darchaius.deployment.applicationId=asgard -Dnetflix.datacenter=cloud"
   vars_files:
     - vars/{{ ansible_distribution }}.yml
   
