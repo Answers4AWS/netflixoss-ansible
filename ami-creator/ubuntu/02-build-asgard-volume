@@ -30,8 +30,7 @@ cat > torun <<EOF
 set -e
 
 cd $playbooks_dir
-wget https://github.com/Netflix/asgard/releases/download/asgard-1.2/asgard.war
-ansible-playbook -T 120 -c local -i ../inventory/local -e 'ami_build=True local_war=asgard.war' asgard-ubuntu.yml
+ansible-playbook -T 120 -c local -i ../inventory/local -e 'ami_build=True' asgard-ubuntu.yml
 EOF
 
 imgRunScriptAsUbuntu torun
