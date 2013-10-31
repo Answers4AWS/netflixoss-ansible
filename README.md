@@ -209,9 +209,9 @@ _NOTES_:
     -  Use the 2.4.2 AMI
     -  Make sure the master node is at least an `m1.medium` so that Tomcat has enough RAM to run
     -  Get EMR to install Hive 0.11
-    -  Get EMR to Install Pig 0.11
+    -  Get EMR to Install Pig 0.11.1
 1.  Modify the `ElasticMapReduce-master` security group
-    - Allow port 7001 access from your IP address only
+    -  Allow port 7001 access from your IP address only
 1.  Go to the EC2 page, and set the `Name` tag of the master node to `Genie`
 1.  Confirm you can see the instance using the Ansible EC2 inventory
 
@@ -222,7 +222,7 @@ OK, you are now ready to install Genie on the master node of the EMR JobFlow.
     $ ansible-playbook playbooks/genie-hadoop-emr.yml -l 'tag_Name_Genie'
 
 This will configure the master node to be running the 
-https://netflixoss.ci.cloudbees.com/job/genie-master/lastSuccessfulBuild/artifact/genie-web/build/libs/genie-web-0.22-SNAPSHOT.war)
+[latest snapshot build](https://netflixoss.ci.cloudbees.com/job/genie-master/lastSuccessfulBuild/artifact/genie-web/build/libs/genie-web-0.22-SNAPSHOT.war)
 of Genie. If you prefer to build your own WAR file yourself, just specify the path to the WAR file:
 
     $ ansible-playbook playbooks/genie-hadoop-emr.yml -l 'tag_Name_Genie' -e "local_war=/path/to/genie.war"

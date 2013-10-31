@@ -2,7 +2,6 @@
 # Genie role
 - name: Copy tomcat server.xml file
   copy: src=server.xml dest=/usr/local/tomcat/conf/server.xml owner=root group=root mode=0644
-  notify: restart tomcat
 
 - name: Remove default root webapp
   file: path=/usr/local/tomcat/webapps/ROOT state=absent
@@ -19,7 +18,6 @@
   # This is because Derby DB needs to be created
 - name: Make tomcat directory writable by tomcat
   file: path=/var/lib/tomcat7 state=directory owner={{ tomcat_user }} group={{ tomcat_user }} mode=0755
-  tags: db
  
 - name: Ensure the pig.properties file exists
   # TODO: Replace with file state=touch after Ansible 1.4 is released
@@ -34,8 +32,11 @@
   get_url: url={{ latest_successful_build_url }} dest=/usr/local/tomcat/webapps/ROOT.war
   when: local_war == ""
   tags: deploy
-  notify: restart tomcat
-  
+
+- name: Restart tomcat
+  service: name=tomcat7 state=restarted
+  tags: deploy
+    
 - name: Clone Genie repository from GitHub
   git: repo={{ genie_repo }}
        dest=/home/hadoop/genie
@@ -44,12 +45,15 @@
   sudo_user: hadoop
   tags: clone
 
+- name: Wait for Tomcat to be available
+  wait_for: port=7001 delay=30
+  
 - name: Register EMR cluster with Genie
   command: sudo -u hadoop -H -i /home/hadoop/genie/deploy/aws/emr_genie_postinstall.sh
   tags: reg
 
 
-# NOTES to myself
+# NOTES:
 #
 # If Tomcat fails with:
 #     SEVERE: Error listenerStart
