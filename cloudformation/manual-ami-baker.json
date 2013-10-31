@@ -147,7 +147,7 @@
                 "#!/bin/bash",
                 "apt-get update",
                 "apt-get install -y git-core",
-                "sudo -u ubuntu -H -i git clone git@github.com:Answers4AWS/netflixoss-ansible.git"
+                "sudo -u ubuntu -H -i git clone https://github.com/Answers4AWS/netflixoss-ansible.git"
               ]
             ]
           }
