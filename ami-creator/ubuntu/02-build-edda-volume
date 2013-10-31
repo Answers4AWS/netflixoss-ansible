@@ -30,7 +30,7 @@ cat > torun <<EOF
 set -e
 
 cd $playbooks_dir
-ansible-playbook -T 120 -c local -i ../inventory/local -e 'ami_build=True' edda-ubuntu.yml
+ansible-playbook -T 120 -c local -i ../inventory/local -e 'ami=True' edda-ubuntu.yml
 EOF
 
 imgRunScriptAsUbuntu torun
