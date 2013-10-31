@@ -9,7 +9,7 @@ This project is a set of Ansible Playbooks to configure instances to run some of
 - [Asgard](#asgard)
 - [Edda](#edda)
 - [Eureka](#eureka)
-- Genie (started, but not yet complete)
+- [Genie](#genie)
 - [Ice](#ice)
 - Lipstick (coming soon)
 - [Simian Army](#simian-army)
@@ -195,6 +195,42 @@ If all of that seems too hard, feel free to use the [Edda CloudFormation templat
 _NOTES_:
 
 1. This is not production quality. If the instance dies, you loose your history. This is meant as a quick way to get Edda up and running and see if you like it. Have a look at [this wiki page for running Edda in production](https://github.com/Netflix/edda/wiki/Resiliency).
+
+
+### Genie
+
+[Genie](https://github.com/Netflix/genie) is the NetflixOSS Hadoop Platform as a Service. It provides REST-ful APIs to run Hadoop, Hive and Pig jobs, and to manage multiple Hadoop resources and perform job submissions across them.
+
+1.  If you don't already have one, create a new Key Pair, and add it to your keychain or SSH agent so you don't need to specify it later:
+
+        $ ssh-add mykey.pem
+
+1.  Launch an Elastic MapReduce (EMR) Cluster using the above Key Pair
+    -  Use the 2.4.2 AMI
+    -  Make sure the master node is at least an `m1.medium` so that Tomcat has enough RAM to run
+    -  Install Hive 0.11 as a Bootstrap Action
+    -  Install Pig 0.11 as a Bootstrap Action
+1.  Modify the `ElasticMapReduce-master` security group
+    - Allow port 7001 access from your IP address only
+1.  Go to the EC2 page, and set the `Name` tag of the master node to `Genie`
+1.  Confirm you can see the instance using the Ansible EC2 inventory
+
+        $ /etc/ansible/hosts | grep 'Genie'
+
+OK, you are now ready to install Genie on the master node of the EMR JobFlow.
+ 
+    $ ansible-playbook playbooks/genie-hadoop-emr.yml -l 'tag_Name_Genie'
+
+This will configure the master node to be running the 
+https://netflixoss.ci.cloudbees.com/job/genie-master/lastSuccessfulBuild/artifact/genie-web/build/libs/genie-web-0.22-SNAPSHOT.war)
+of Genie. If you prefer to build your own WAR file yourself, just specify the path to the WAR file:
+
+    $ ansible-playbook playbooks/genie-hadoop-emr.yml -l 'tag_Name_Genie' -e "local_war=/path/to/genie.war"
+
+Once the playbook is finished, you will have Genie running inside Tomcat on your EMR master node. You can access it via HTTP. Example:
+
+    http://ec2-123-123-123-123.compute.amazonaws.com:7001/
+
 
 
 ### Ice

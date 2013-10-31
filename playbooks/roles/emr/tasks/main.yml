@@ -1,4 +1,5 @@
 ---
 # EMR role
 - name: Install python-apt
+  # Doing this enables the 'apt' module in later roles
   command: apt-get install -y python-apt

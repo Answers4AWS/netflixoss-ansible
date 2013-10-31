@@ -1,12 +1,11 @@
 ---
-# Genie playbook for EMR
+# Genie playbook to be run on the EMR master node
 - name: Genie
   user: hadoop
   sudo: True
   tags: genie
   hosts: all
   roles:
-#    - base
     - emr
     - tomcat
     - genie
