@@ -18,7 +18,7 @@ JASPER_HOME="/usr/share/tomcat7"
 CATALINA_TMPDIR="/var/cache/tomcat7/temp"
 
 # Use JAVA_OPTS to set java.library.path for libtcnative.so
-JAVA_OPTS="-Djava.library.path=/usr/lib64 -Xmx{{ tomcat_xmx|default('512m') }}  {{ tomcat_extra_opts }}"
+JAVA_OPTS="-Djava.library.path=/usr/lib64 -Xmx{{ tomcat_xmx|default('512m') }}  {{ tomcat_extra_opts|default('') }}"
 
 # What user should run tomcat
 TOMCAT_USER="tomcat"
