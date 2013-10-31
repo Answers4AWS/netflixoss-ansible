@@ -36,3 +36,26 @@
   tags: deploy
   notify: restart tomcat
   
+- name: Clone Genie repository from GitHub
+  git: repo={{ genie_repo }}
+       dest=/home/hadoop/genie
+       version={{ genie_branch }}
+  sudo: True
+  sudo_user: hadoop
+  tags: clone
+
+- name: Register EMR cluster with Genie
+  command: sudo -u hadoop -H -i /home/hadoop/genie/deploy/aws/emr_genie_postinstall.sh
+  tags: reg
+
+
+# NOTES to myself
+#
+# If Tomcat fails with:
+#     SEVERE: Error listenerStart
+#
+# rm -r /usr/local/tomcat/genie-db /usr/local/tomcat/derby.log
+#
+
+
+

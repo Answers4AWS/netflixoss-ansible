@@ -2,3 +2,5 @@
 ami_build: ami is defined and ami 
 not_ami_build: ami is not defined or not ami
 latest_successful_build_url: https://netflixoss.ci.cloudbees.com/job/genie-master/lastSuccessfulBuild/artifact/genie-web/build/libs/genie-web-0.22-SNAPSHOT.war
+genie_repo: https://github.com/Netflix/genie.git
+genie_branch: master
