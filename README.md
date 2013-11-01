@@ -4,6 +4,10 @@
 
 This project is a set of Ansible Playbooks to configure instances to run some of the [NetflixOSS](http://netflix.github.io/) projects.
 
+These playbooks are quite low level as they include each step required to configure a service. If you are looking for the __easiest__ way to get started with NetflixOSS projects, launch your desired [NetflixOSS CloudFormation template](https://github.com/Answers4AWS/netflixoss-ansible/tree/master/cloudformation).
+
+## Projects
+
 - Archaius (waiting on https://github.com/Netflix/archaius/issues/132)
 - [Aminator](#aminator)
 - [Asgard](#asgard)

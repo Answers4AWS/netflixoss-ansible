@@ -1,0 +1,201 @@
+{
+    "Description": "NetflixOSS Eureka 1.1.98 - Template by Answers for AWS", 
+    "Mappings": {
+        "RegionMap": {
+            "ap-northeast-1": {
+                "AMI": "ami-d51b7ed4"
+            }, 
+            "ap-southeast-1": {
+                "AMI": "ami-4a4b1e18"
+            }, 
+            "ap-southeast-2": {
+                "AMI": "ami-5d51cd67"
+            }, 
+            "eu-west-1": {
+                "AMI": "ami-4b6a893c"
+            }, 
+            "sa-east-1": {
+                "AMI": "ami-d364c2ce"
+            }, 
+            "us-east-1": {
+                "AMI": "ami-7bb3ea12"
+            }, 
+            "us-west-1": {
+                "AMI": "ami-96596fd3"
+            }, 
+            "us-west-2": {
+                "AMI": "ami-7b30a34b"
+            }
+        }
+    }, 
+    "Outputs": {
+        "Eureka": {
+            "Description": "Please go to the EC2 page in the AWS Web Console", 
+            "Value": "Look for the instance named Eureka and assign it an Elastic IP"
+        }
+    }, 
+    "Parameters": {
+        "InstanceType": {
+            "AllowedValues": [
+                "m1.medium", 
+                "m1.large", 
+                "m1.xlarge", 
+                "m2.xlarge", 
+                "m2.2xlarge", 
+                "m2.4xlarge", 
+                "m3.xlarge", 
+                "m3.2xlarge", 
+                "c1.medium", 
+                "c1.xlarge", 
+                "cg1.4xlarge"
+            ], 
+            "ConstraintDescription": "must be a valid EC2 instance type", 
+            "Default": "m1.medium", 
+            "Description": "EC2 instance type to launch for Application servers", 
+            "Type": "String"
+        }, 
+        "KeyPairName": {
+            "AllowedPattern": "[-_ a-zA-Z0-9]*", 
+            "ConstraintDescription": "can contain only alphanumeric characters, spaces, dashes and underscores.", 
+            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance", 
+            "MaxLength": 64, 
+            "MinLength": 1, 
+            "Type": "String"
+        }, 
+        "YourIpAddress": {
+            "Description": "Your IP address", 
+            "Type": "String"
+        }
+    }, 
+    "Resources": {
+        "EurekaInstanceProfile": {
+            "Properties": {
+                "Path": "/", 
+                "Roles": [
+                    {
+                        "Ref": "EurekaRole"
+                    }
+                ]
+            }, 
+            "Type": "AWS::IAM::InstanceProfile"
+        }, 
+        "EurekaRole": {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sts:AssumeRole"
+                            ], 
+                            "Effect": "Allow", 
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazonaws.com"
+                                ]
+                            }
+                        }
+                    ]
+                }, 
+                "Path": "/", 
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "autoscaling:DescribeAutoScalingGroups", 
+                                        "ec2:AssociateAddress", 
+                                        "ec2:DisassociateAddress"
+                                    ], 
+                                    "Effect": "Allow", 
+                                    "Resource": "*"
+                                }
+                            ]
+                        }, 
+                        "PolicyName": "EurekaPolicy"
+                    }
+                ]
+            }, 
+            "Type": "AWS::IAM::Role"
+        }, 
+        "EurekaSecurityGroup": {
+            "Properties": {
+                "GroupDescription": "Access to Eureka", 
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "0.0.0.0/0", 
+                        "FromPort": 22, 
+                        "IpProtocol": "tcp", 
+                        "ToPort": 22
+                    }, 
+                    {
+                        "CidrIp": {
+                            "Fn::Join": [
+                                "/", 
+                                [
+                                    {
+                                        "Ref": "YourIpAddress"
+                                    }, 
+                                    "32"
+                                ]
+                            ]
+                        }, 
+                        "FromPort": 80, 
+                        "IpProtocol": "tcp", 
+                        "ToPort": 80
+                    }
+                ]
+            }, 
+            "Type": "AWS::EC2::SecurityGroup"
+        }, 
+        "MyASG": {
+            "Properties": {
+                "AvailabilityZones": {
+                    "Fn::GetAZs": ""
+                }, 
+                "Cooldown": 120, 
+                "LaunchConfigurationName": {
+                    "Ref": "MyLaunchConfig"
+                }, 
+                "MaxSize": 1, 
+                "MinSize": 1, 
+                "Tags": [
+                    {
+                        "Key": "Name", 
+                        "PropagateAtLaunch": "true", 
+                        "Value": "Eureka"
+                    }
+                ]
+            }, 
+            "Type": "AWS::AutoScaling::AutoScalingGroup"
+        }, 
+        "MyLaunchConfig": {
+            "Properties": {
+                "IamInstanceProfile": {
+                    "Ref": "EurekaInstanceProfile"
+                }, 
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "RegionMap", 
+                        {
+                            "Ref": "AWS::Region"
+                        }, 
+                        "AMI"
+                    ]
+                }, 
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                }, 
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                }, 
+                "SecurityGroups": [
+                    {
+                        "Ref": "EurekaSecurityGroup"
+                    }
+                ]
+            }, 
+            "Type": "AWS::AutoScaling::LaunchConfiguration"
+        }
+    }
+}
