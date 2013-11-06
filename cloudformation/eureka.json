@@ -1,30 +1,30 @@
 {
-    "Description": "NetflixOSS Eureka 1.1.98 - Template by Answers for AWS", 
+    "Description": "NetflixOSS Eureka 1.1.121 - Template by Answers for AWS", 
     "Mappings": {
         "RegionMap": {
             "ap-northeast-1": {
-                "AMI": "ami-d51b7ed4"
+                "AMI": "ami-91d3b690"
             }, 
             "ap-southeast-1": {
-                "AMI": "ami-4a4b1e18"
+                "AMI": "ami-2a9cc978"
             }, 
             "ap-southeast-2": {
-                "AMI": "ami-5d51cd67"
+                "AMI": "ami-1970ec23"
             }, 
             "eu-west-1": {
-                "AMI": "ami-4b6a893c"
+                "AMI": "ami-c1c527b6"
             }, 
             "sa-east-1": {
-                "AMI": "ami-d364c2ce"
+                "AMI": "ami-df45e3c2"
             }, 
             "us-east-1": {
-                "AMI": "ami-7bb3ea12"
+                "AMI": "ami-99247ff0"
             }, 
             "us-west-1": {
-                "AMI": "ami-96596fd3"
+                "AMI": "ami-ae0234eb"
             }, 
             "us-west-2": {
-                "AMI": "ami-7b30a34b"
+                "AMI": "ami-f40991c4"
             }
         }
     }, 

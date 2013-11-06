@@ -8,7 +8,7 @@ import troposphere.autoscaling as auto
 from troposphere.iam import Role, Policy, InstanceProfile, PolicyType
 
 template = Template()
-template.add_description('NetflixOSS Eureka 1.1.98 - Template by Answers for AWS')
+template.add_description('NetflixOSS Eureka 1.1.121 - Template by Answers for AWS')
 
 keyname = template.add_parameter(Parameter(
     "KeyPairName",
@@ -37,14 +37,14 @@ instance_type = template.add_parameter(Parameter(
 
 
 template.add_mapping('RegionMap', {
-    "us-east-1":      {"AMI": "ami-7bb3ea12"},
-    "us-west-1":      {"AMI": "ami-96596fd3"},
-    "us-west-2":      {"AMI": "ami-7b30a34b"},
-    "eu-west-1":      {"AMI": "ami-4b6a893c"},
-    "sa-east-1":      {"AMI": "ami-d364c2ce"},
-    "ap-southeast-1": {"AMI": "ami-4a4b1e18"},
-    "ap-southeast-2": {"AMI": "ami-5d51cd67"},
-    "ap-northeast-1": {"AMI": "ami-d51b7ed4"}
+    "us-east-1":      {"AMI": "ami-99247ff0"},
+    "us-west-1":      {"AMI": "ami-ae0234eb"},
+    "us-west-2":      {"AMI": "ami-f40991c4"},
+    "eu-west-1":      {"AMI": "ami-c1c527b6"},
+    "sa-east-1":      {"AMI": "ami-df45e3c2"},
+    "ap-southeast-1": {"AMI": "ami-2a9cc978"},
+    "ap-southeast-2": {"AMI": "ami-1970ec23"},
+    "ap-northeast-1": {"AMI": "ami-91d3b690"}
 })
 
 role = template.add_resource(Role('EurekaRole',
