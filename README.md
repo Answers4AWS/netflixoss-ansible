@@ -151,7 +151,7 @@ Now you can run the playbook
 $ ansible-playbook playbooks/eureka-amazon-linux.yml -l 'tag_Name_Eureka'
 ```
 
-This will configure the instance to be running the [latest snapshot build](https://netflixoss.ci.cloudbees.com/job/eureka-master/lastSuccessfulBuild/artifact/eureka-server/build/libs/eureka-server-1.1.98.war) of Eureka. If you prefer to build your own WAR file yourself, just specify the path to the WAR file:
+This will configure the instance to be running the [latest snapshot build](https://netflixoss.ci.cloudbees.com/job/eureka-master/lastSuccessfulBuild/artifact/eureka-server/build/libs/eureka-server-1.1.121.war) of Eureka. If you prefer to build your own WAR file yourself, just specify the path to the WAR file:
 
 ```
 $ ansible-playbook playbooks/eureka-amazon-linux.yml -l 'tag_Name_Eureka' -e "local_war=$HOME/Downloads/eureka-server.war"
