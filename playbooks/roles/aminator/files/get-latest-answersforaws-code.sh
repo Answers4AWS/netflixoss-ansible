@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-# Pulls the latest code from Github
+# Gets the latest code from Github
 # This script is designed to be run as the user that owns the directory, which
 # based on the playbook for Aminator is 'root'
 
@@ -23,3 +23,8 @@ set -e
 echo "Pulling latest NetflixOSS-Ansible code from Github"
 cd /usr/local/netflixoss-ansible
 git pull origin master
+
+echo "Getting latest version of DistAMI"
+pip install --upgrade distami
+
+echo "DONE"

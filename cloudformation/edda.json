@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion":"2010-09-09",
-  "Description":"NetflixOSS Edda by Answers for AWS",
+  "Description":"NetflixOSS Edda 2.1 - Template by Answers for AWS",
   "Parameters":{
     "InstanceType":{
       "Description":"Type of EC2 instances to launch",

@@ -1,17 +1,12 @@
 ---
 # Aminator role
-- name: Install Python libraries
-  pip: name={{ item }} state=latest
-  with_items:
-    - distribute
-    - setuptools
-    - bunch
-
 - name: Create config directory
   file: name=/etc/aminator state=directory owner=root group=root mode=0755
+  tags: dirs
   
 - name: Create logging directory
   file: name=/var/log/aminator state=directory owner=root group=root mode=0755
+  tags: dirs
   
 - name: Create working directories
   file: name={{ item }} state=directory owner=root group=root mode=0755
@@ -25,9 +20,11 @@
   git: repo={{ aminator_repo }}
        dest=/usr/local/aminator
        version={{ aminator_branch }}
+  tags: code
 
 - name: Install Aminator
   command: python setup.py install chdir=/usr/local/aminator
+  tags: code
 
 - name: Copy config files
   command: cp /usr/local/aminator/aminator/default_conf/{{ item }} /etc/aminator/{{ item }}
@@ -35,18 +32,30 @@
     - aminator.yml
     - environments.yml
     - logging.yml
+  tags: code
+
+- name: Install Ansible provisioner plugin
+  command: aminator-plugin install ansible
+  tags: plugins
+  
+- name: Copy environments config that contains the plugins
+  copy: src=environments.yml dest=/etc/aminator/environments.yml owner=root group=root mode=0644  
+  tags: config
 
 - name: Checkout NetflixOSS-Ansible code from Github
   git: repo=https://github.com/Answers4AWS/netflixoss-ansible.git
        dest=/usr/local/netflixoss-ansible
        version=master
+  tags: netflixoss
   
 - name: Copy repo updating script
-  copy: src=pull-latest-netflixoss-ansible.sh dest=/usr/bin/pull-latest-netflixoss-ansible.sh owner=root group=root mode=0755
+  copy: src=get-latest-answersforaws-code.sh dest=/usr/bin/get-latest-answersforaws-code.sh owner=root group=root mode=0755
+  tags: netflixoss
 
 - name: Add repo updating script to rc.local
-  lineinfile: dest={{ rc_local_path }}  insertbefore="^# ADD HERE" regexp="pull-latest-netflixoss-ansible" line="/usr/bin/pull-latest-netflixoss-ansible.sh"
+  lineinfile: dest={{ rc_local_path }}  insertbefore="^# ADD HERE" regexp="get-latest-answersforaws-code" line="/usr/bin/get-latest-answersforaws-code.sh"
+  tags: netflixoss
   
 - name: Install DistAMI
   pip: name=distami state=latest
-  
+  tags: distami

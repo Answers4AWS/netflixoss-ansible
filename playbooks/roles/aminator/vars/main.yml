@@ -1,3 +1,3 @@
 ---
-aminator_repo: git@github.com:Netflix/aminator.git
+aminator_repo: https://github.com/Netflix/aminator.git
 aminator_branch: master

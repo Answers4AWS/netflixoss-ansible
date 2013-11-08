@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion":"2010-09-09",
-  "Description":"NetflixOSS Aminator by Answers for AWS",
+  "Description":"NetflixOSS Aminator 1.2.129 - Template by Answers for AWS",
   "Parameters":{
     "InstanceType":{
       "Description":"Type of EC2 instances to launch",
@@ -141,7 +141,6 @@
     "AminatorLaunchConfig":{
       "Type":"AWS::AutoScaling::LaunchConfiguration",
       "Properties":{
-        "AssociatePublicIpAddress": true,
         "KeyName":{
           "Ref":"KeyName"
         },
