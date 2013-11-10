@@ -45,10 +45,9 @@ sudo -E apt-get upgrade -y
 sudo -E apt-get install --no-install-recommends -y \
  ec2-ami-tools            \
  ec2-api-tools            \
- git-core                 \
- xfsprogs
+ git-core
 
-# This is here because we need ec2-copy-snapshot
+# This is here because we need to use IAM Roles
 if [ ! -e ec2-api-tools_1.6.6.0-0ubuntu1_all.deb ]; then
 	wget http://mirrors.us.kernel.org/ubuntu/pool/multiverse/e/ec2-api-tools/ec2-api-tools_1.6.6.0-0ubuntu1_all.deb
 fi
@@ -112,13 +111,12 @@ sudo -E chroot $imagedir                      \
     libapt-pkg4.12                            \
     make                                      \
     python-support                            \
-    python-jinja2                             \
-    xfsprogs                                  
+    python-jinja2
 
 
 # Use XFS for the target root file system because it is better than ext4
-echo "Setting XFS config"
-sudo perl -pi -e 's/ext4/xfs/' $imagedir/etc/fstab
+#echo "Setting XFS config"
+#sudo perl -pi -e 's/ext4/xfs/' $imagedir/etc/fstab
 sudo perl -pi -e 's/cloudimg/uec/' $imagedir/etc/fstab
 sudo perl -pi -e 's/cloudimg/uec/' $imagedir/boot/grub/menu.lst
 
@@ -143,7 +141,7 @@ done
 echo " Done"
   
 echo "Creating filesystem on EBS volume"
-sudo mkfs.xfs -L uec-rootfs $dev
+sudo mkfs.ext4 -L uec-rootfs $dev
 sudo mkdir $ebsimagedir
 sudo mount $dev $ebsimagedir
 
