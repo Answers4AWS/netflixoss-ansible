@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion":"2010-09-09",
-  "Description":"NetflixOSS Aminator 1.2.129 - Template by Answers for AWS",
+  "Description":"NetflixOSS Aminator 2.0.174 - Template by Answers for AWS",
   "Parameters":{
     "InstanceType":{
       "Description":"Type of EC2 instances to launch",
@@ -22,28 +22,28 @@
   "Mappings":{
     "AWSRegion2AMI":{
       "us-east-1":{
-        "ami":"ami-9deca5f4"
+        "ami":"ami-89b6ece0"
       },
       "us-west-1":{
-        "ami":"ami-880633cd"
+        "ami":"ami-36c6f073"
       },
       "us-west-2":{
-        "ami":"ami-bef9668e"
+        "ami":"ami-ecc65ddc"
       },
       "eu-west-1":{
-        "ami":"ami-8c799cfb"
+        "ami":"ami-b957b5ce"
       },
       "sa-east-1":{
-        "ami":"ami-8da50290"
+        "ami":"ami-a15bfdbc"
       },
       "ap-southeast-1":{
-        "ami":"ami-2c90db7e"
+        "ami":"ami-16bbee44"
       },
       "ap-southeast-2":{
-        "ami":"ami-8d8f12b7"
+        "ami":"ami-e31884d9"
       },
       "ap-northeast-1":{
-        "ami":"ami-05950904"
+        "ami":"ami-53beda52"
       }
     }
   },
