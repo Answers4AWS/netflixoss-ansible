@@ -1,5 +1,8 @@
 ---
 # Aminator role
+- name: Make sure this latest boto is installed
+  pip: name=boto state=latest
+  
 - name: Create config directory
   file: name=/etc/aminator state=directory owner=root group=root mode=0755
   tags: dirs

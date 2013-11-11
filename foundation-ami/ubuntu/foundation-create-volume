@@ -110,8 +110,10 @@ sudo -E chroot $imagedir                      \
     git-core                                  \
     libapt-pkg4.12                            \
     make                                      \
+    python-crypto                             \
     python-support                            \
-    python-jinja2
+    python-jinja2                             \
+    python-pip
 
 
 # Use XFS for the target root file system because it is better than ext4
@@ -169,9 +171,7 @@ sudo mount -o bind /dev $ebsimagedir/dev
 
 echo
 echo "Installing Ansible"
-sudo -E chroot $ebsimagedir add-apt-repository -y ppa:rquillo/ansible
-sudo -E chroot $ebsimagedir apt-get update
-sudo -E chroot $ebsimagedir apt-get install -y ansible
+sudo -E chroot $ebsimagedir pip install ansible
 
 echo
 echo "DONE"
