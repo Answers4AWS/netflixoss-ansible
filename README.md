@@ -1,5 +1,7 @@
 # NetflixOSS Ansible Playbooks
 
+Welcome to the [NetflixOSS Cloud Prize award winning playbooks, AMIs and CloudFormation templates](http://techblog.netflix.com/2013/11/netflix-open-source-software-cloud.html).
+
 [Ansible](https://github.com/ansible/ansible/) is a configuration management system that is [very simple to learn and use](http://answersforaws.com/episodes/2-ansible-and-aws/).
 
 This project is a set of Ansible Playbooks to configure instances to run some of the [NetflixOSS](http://netflix.github.io/) projects.
