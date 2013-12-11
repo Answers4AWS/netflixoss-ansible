@@ -85,6 +85,17 @@
             "MinLength": 1, 
             "Type": "String"
         }, 
+        "OracleJava": {
+            "AllowedValues": [
+                "yes", 
+                "YES", 
+                "'yes'", 
+                "Yes"
+            ], 
+            "ConstraintDescription": "Type 'yes' to agree to the license", 
+            "Description": "Type 'yes' to accept the Oracle Java license found here: http://www.oracle.com/technetwork/java/javase/terms/license/index.html", 
+            "Type": "String"
+        }, 
         "YourIpAddress": {
             "Description": "Your IP address", 
             "Type": "String"

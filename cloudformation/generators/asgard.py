@@ -34,6 +34,13 @@ instance_type = template.add_parameter(Parameter(
     ConstraintDescription = "must be a valid EC2 instance type"
 ))
 
+java_license = template.add_parameter(Parameter(
+    "OracleJava",
+    Description = "Type 'yes' to accept the Oracle Java license found here: http://www.oracle.com/technetwork/java/javase/terms/license/index.html",
+    Type = "String",
+    AllowedValues = [ "yes", "YES", "'yes'", "Yes" ],
+    ConstraintDescription = "Type 'yes' to agree to the license"
+))
 
 template.add_mapping('RegionMap', {
     "us-east-1":      {"AMI": "ami-4d755a24"},
