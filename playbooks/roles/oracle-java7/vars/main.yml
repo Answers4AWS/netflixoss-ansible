@@ -2,7 +2,8 @@
 # The following variables are used in this task:
 # command: aws s3 cp {{ aws_cli_args }} {{ java_apt_s3_url }} {{ local_apt_path }}
 
-# S3 URL of the APT repository created with OAB that contains Oracle Java 7
+# S3 URL of the APT repository created with OAB that contains Oracle Java 7.
+# You need to modify this to your S3 bucket
 java_apt_s3_url: s3://a4a-apt/java/
 
 # The path to copy the APT repository to from S3. This path must also match the
