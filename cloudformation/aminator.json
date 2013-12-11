@@ -94,7 +94,9 @@
                     "ec2:RegisterImage",
                     "ec2:ResetImageAttribute",
                     "ec2:ResetSnapshotAttribute",
-                    "ec2:Describe*"
+                    "ec2:Describe*",
+                    "s3:Get*",
+                    "s3:List*"
                   ],
                   "Resource": "*"
                 }
