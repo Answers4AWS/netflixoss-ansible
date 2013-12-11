@@ -1,0 +1,13 @@
+---
+# The following variables are used in this task:
+# command: aws s3 cp {{ aws_cli_args }} {{ java_apt_s3_url }} {{ local_apt_path }}
+
+# S3 URL of the APT repository created with OAB that contains Oracle Java 7
+java_apt_s3_url: s3://a4a-apt/java/
+
+# The path to copy the APT repository to from S3. This path must also match the
+# path in files/oab.list
+local_apt_path: /var/local/oab/deb
+
+# Command line arguments to pass to S3 copy command
+aws_cli_args: --region us-west-2 --recursive

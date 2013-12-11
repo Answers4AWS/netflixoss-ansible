@@ -1,0 +1,34 @@
+---
+# Oracle Java7 role
+#
+# This is based on:
+#   https://github.com/flexiondotorg/oab-java6
+# I have generated the APT repo, and stored the results in S3. If you wish to
+# use this, I suggest you do the same. I would love to make it public, but need
+# to comply with Oracle's asinine license requirements. Sorry.
+#
+- name: Install Oracle Java 7 (yum version)
+  fail: msg="I have no yum version of Oracle Java 7 yet. Please submit a pull request to fix this."
+  when: ansible_distribution == 'Amazon'
+
+- name: Create local APT repo directory
+  file: path={{ local_apt_path }} state=directory owner=root group=root mode=0755
+  
+- name: Download repo from S3
+  command: aws s3 cp {{ aws_cli_args }} {{ java_apt_s3_url }} {{ local_apt_path }}
+  
+- name: Copy APT sources list
+  copy: src=oab.list dest=/etc/apt/sources.list.d/oab.list owner=root group=root mode=0644
+  
+- name: Copy APT trusted public key
+  copy: src=pubring.gpg dest=/etc/apt/trusted.gpg.d/pubring.gpg owner=root group=root mode=0644
+  
+- name: Update APT repo
+  apt: update-cache=yes
+  
+- name: Install Oracle Java 7 JDK (apt version)
+  apt: pkg=oracle-java7-jdk state=latest
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Symlink Java 7
+  file: src=/usr/lib/jvm/java-7-oracle dest=/usr/lib/jvm/default-java state=link

@@ -7,6 +7,7 @@
   hosts: all
   roles:
     - base
+    - oracle-java7
     - tomcat
     - asgard
   vars:
