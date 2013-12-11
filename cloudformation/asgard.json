@@ -1,173 +1,149 @@
 {
-    "Description": "NetflixOSS Asgard 1.3.1 - Template by Answers for AWS",
+    "Description": "NetflixOSS Asgard 1.3.1 - Template by Answers for AWS", 
     "Mappings": {
         "RegionMap": {
             "ap-northeast-1": {
-                "AMI": "ami-91395c90"
-            },
+                "AMI": "ami-616e0d60"
+            }, 
             "ap-southeast-1": {
-                "AMI": "ami-8e4114dc"
-            },
+                "AMI": "ami-fea1f5ac"
+            }, 
             "ap-southeast-2": {
-                "AMI": "ami-5b5bc761"
-            },
+                "AMI": "ami-d3a33ce9"
+            }, 
             "eu-west-1": {
-                "AMI": "ami-eb0ae99c"
-            },
+                "AMI": "ami-44bf5633"
+            }, 
             "sa-east-1": {
-                "AMI": "ami-1b9a3c06"
-            },
+                "AMI": "ami-9394358e"
+            }, 
             "us-east-1": {
-                "AMI": "ami-8f4118e6"
-            },
+                "AMI": "ami-4d755a24"
+            }, 
             "us-west-1": {
-                "AMI": "ami-905761d5"
-            },
+                "AMI": "ami-0c251549"
+            }, 
             "us-west-2": {
-                "AMI": "ami-6ebe265e"
+                "AMI": "ami-d0ceabe0"
             }
         }
-    },
+    }, 
     "Outputs": {
-        "AZ": {
-            "Description": "Availability Zone of the newly created EC2 instance",
-            "Value": {
-                "Fn::GetAtt": [
-                    "AsgardInstance",
-                    "AvailabilityZone"
-                ]
-            }
-        },
-        "InstanceId": {
-            "Description": "InstanceId of the newly created EC2 instance",
-            "Value": {
-                "Ref": "AsgardInstance"
-            }
-        },
-        "PrivateDNS": {
-            "Description": "Private DNSName of the newly created EC2 instance",
-            "Value": {
-                "Fn::GetAtt": [
-                    "AsgardInstance",
-                    "PrivateDnsName"
-                ]
-            }
-        },
         "PrivateIP": {
-            "Description": "Private IP address of the newly created EC2 instance",
+            "Description": "Private IP address of the Asgard instance", 
             "Value": {
                 "Fn::GetAtt": [
-                    "AsgardInstance",
+                    "AsgardInstance", 
                     "PrivateIp"
                 ]
             }
-        },
+        }, 
         "PublicDNS": {
-            "Description": "Public DNSName of the newly created EC2 instance",
+            "Description": "Public DNSName of the Asgard instance", 
             "Value": {
                 "Fn::GetAtt": [
-                    "AsgardInstance",
+                    "AsgardInstance", 
                     "PublicDnsName"
                 ]
             }
-        },
+        }, 
         "PublicIP": {
-            "Description": "Public IP address of the newly created EC2 instance",
+            "Description": "Public IP address of the Asgard instance", 
             "Value": {
                 "Fn::GetAtt": [
-                    "AsgardInstance",
+                    "AsgardInstance", 
                     "PublicIp"
                 ]
             }
         }
-    },
+    }, 
     "Parameters": {
         "InstanceType": {
             "AllowedValues": [
-                "m1.medium",
-                "m1.large",
-                "m1.xlarge",
-                "m2.xlarge",
-                "m2.2xlarge",
-                "m2.4xlarge",
-                "m3.xlarge",
-                "m3.2xlarge",
-                "c1.medium",
-                "c1.xlarge",
+                "m1.medium", 
+                "m1.large", 
+                "m1.xlarge", 
+                "m2.xlarge", 
+                "m2.2xlarge", 
+                "m2.4xlarge", 
+                "m3.xlarge", 
+                "m3.2xlarge", 
+                "c1.medium", 
+                "c1.xlarge", 
                 "cg1.4xlarge"
-            ],
-            "ConstraintDescription": "must be a valid EC2 instance type",
-            "Default": "m1.medium",
-            "Description": "EC2 instance type to launch for Application servers",
+            ], 
+            "ConstraintDescription": "must be a valid EC2 instance type", 
+            "Default": "m1.medium", 
+            "Description": "EC2 instance type to launch for Application servers", 
             "Type": "String"
-        },
+        }, 
         "KeyPairName": {
-            "AllowedPattern": "[-_ a-zA-Z0-9]*",
-            "ConstraintDescription": "can contain only alphanumeric characters, spaces, dashes and underscores.",
-            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
-            "MaxLength": 64,
-            "MinLength": 1,
+            "AllowedPattern": "[-_ a-zA-Z0-9]*", 
+            "ConstraintDescription": "can contain only alphanumeric characters, spaces, dashes and underscores.", 
+            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance", 
+            "MaxLength": 64, 
+            "MinLength": 1, 
             "Type": "String"
-        },
+        }, 
         "YourIpAddress": {
-            "Description": "Your IP address",
+            "Description": "Your IP address", 
             "Type": "String"
         }
-    },
+    }, 
     "Resources": {
         "AsgardInstance": {
             "Properties": {
                 "ImageId": {
                     "Fn::FindInMap": [
-                        "RegionMap",
+                        "RegionMap", 
                         {
                             "Ref": "AWS::Region"
-                        },
+                        }, 
                         "AMI"
                     ]
-                },
+                }, 
                 "InstanceType": {
                     "Ref": "InstanceType"
-                },
+                }, 
                 "KeyName": {
                     "Ref": "KeyPairName"
-                },
+                }, 
                 "SecurityGroups": [
                     {
                         "Ref": "AsgardSecurityGroup"
                     }
                 ]
-            },
+            }, 
             "Type": "AWS::EC2::Instance"
-        },
+        }, 
         "AsgardSecurityGroup": {
             "Properties": {
-                "GroupDescription": "Access to Asgard Instance",
+                "GroupDescription": "Access to Asgard Instance", 
                 "SecurityGroupIngress": [
                     {
-                        "CidrIp": "0.0.0.0/0",
-                        "FromPort": 22,
-                        "IpProtocol": "tcp",
+                        "CidrIp": "0.0.0.0/0", 
+                        "FromPort": 22, 
+                        "IpProtocol": "tcp", 
                         "ToPort": 22
-                    },
+                    }, 
                     {
                         "CidrIp": {
                             "Fn::Join": [
-                                "/",
+                                "/", 
                                 [
                                     {
                                         "Ref": "YourIpAddress"
-                                    },
+                                    }, 
                                     "32"
                                 ]
                             ]
-                        },
-                        "FromPort": 80,
-                        "IpProtocol": "tcp",
+                        }, 
+                        "FromPort": 80, 
+                        "IpProtocol": "tcp", 
                         "ToPort": 80
                     }
                 ]
-            },
+            }, 
             "Type": "AWS::EC2::SecurityGroup"
         }
     }

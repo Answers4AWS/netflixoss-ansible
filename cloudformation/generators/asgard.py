@@ -36,14 +36,14 @@ instance_type = template.add_parameter(Parameter(
 
 
 template.add_mapping('RegionMap', {
-    "us-east-1":      {"AMI": "ami-8f4118e6"},
-    "us-west-1":      {"AMI": "ami-905761d5"},
-    "us-west-2":      {"AMI": "ami-6ebe265e"},
-    "eu-west-1":      {"AMI": "ami-eb0ae99c"},
-    "sa-east-1":      {"AMI": "ami-1b9a3c06"},
-    "ap-southeast-1": {"AMI": "ami-8e4114dc"},
-    "ap-southeast-2": {"AMI": "ami-5b5bc761"},
-    "ap-northeast-1": {"AMI": "ami-91395c90"}
+    "us-east-1":      {"AMI": "ami-4d755a24"},
+    "us-west-1":      {"AMI": "ami-0c251549"},
+    "us-west-2":      {"AMI": "ami-d0ceabe0"},
+    "eu-west-1":      {"AMI": "ami-44bf5633"},
+    "sa-east-1":      {"AMI": "ami-9394358e"},
+    "ap-southeast-1": {"AMI": "ami-fea1f5ac"},
+    "ap-southeast-2": {"AMI": "ami-d3a33ce9"},
+    "ap-northeast-1": {"AMI": "ami-616e0d60"}
 })
 
 # Create a security group
