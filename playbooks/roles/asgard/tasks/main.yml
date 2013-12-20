@@ -22,23 +22,23 @@
   tags: deploy
   
 - name: Remove any old version
-  file: path=/usr/local/tomcat/webapps/asgard state=absent
+  file: path=/usr/local/tomcat/webapps/ROOT state=absent
   notify: restart tomcat
   tags: deploy
   
 - name: Create asgard deployment directory
-  file: path=/usr/local/tomcat/webapps/asgard state=directory
+  file: path=/usr/local/tomcat/webapps/ROOT state=directory
   tags: deploy
 
 - name: Decompress asgard WAR file
-  command: chdir=/usr/local/tomcat/webapps/asgard unzip ../asgard.war
+  command: chdir=/usr/local/tomcat/webapps/ROOT unzip ../asgard.war
   notify: restart tomcat
   tags: deploy
   
 - name: Remove source WAR file
   file: path=/usr/local/tomcat/webapps/asgard.war state=absent
   tags: deploy
-  
+   
 - name: Add BASIC auth requirements to web.xml
   lineinfile: dest=/usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml regexp="security-constraint" line="<security-constraint><web-resource-collection><web-resource-name></web-resource-name><url-pattern>/*</url-pattern></web-resource-collection><auth-constraint><role-name>asgard</role-name></auth-constraint></security-constraint><login-config><auth-method>BASIC</auth-method><realm-name>asgard</realm-name></login-config>" insertbefore="</web-app>"
   tags: auth
