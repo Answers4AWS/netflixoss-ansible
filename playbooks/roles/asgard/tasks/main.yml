@@ -2,6 +2,7 @@
 # Asgard role
 - name: Copy tomcat server.xml file
   copy: src=server.xml dest=/usr/local/tomcat/conf/server.xml owner=root group=root mode=0644
+  tags: auth
   notify: restart tomcat
 
 - name: Remove default root webapp
@@ -20,3 +21,33 @@
   when: local_war == ""
   tags: deploy
   
+- name: Remove any old version
+  file: path=/usr/local/tomcat/webapps/asgard state=absent
+  notify: restart tomcat
+  tags: deploy
+  
+- name: Create asgard deployment directory
+  file: path=/usr/local/tomcat/webapps/asgard state=directory
+  tags: deploy
+
+- name: Decompress asgard WAR file
+  command: chdir=/usr/local/tomcat/webapps/asgard unzip ../asgard.war
+  notify: restart tomcat
+  tags: deploy
+  
+- name: Remove source WAR file
+  file: path=/usr/local/tomcat/webapps/asgard.war state=absent
+  tags: deploy
+  
+- name: Add BASIC auth requirements to web.xml
+  lineinfile: dest=/usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml regexp="security-constraint" line="<security-constraint><web-resource-collection><web-resource-name></web-resource-name><url-pattern>/*</url-pattern></web-resource-collection><auth-constraint><role-name>asgard</role-name></auth-constraint></security-constraint><login-config><auth-method>BASIC</auth-method><realm-name>asgard</realm-name></login-config>" insertbefore="</web-app>"
+  tags: auth
+  notify: restart tomcat
+   
+#<security-constraint><web-resource-collection><web-resource-name></web-resource-name><url-pattern>/*</url-pattern></web-resource-collection><auth-constraint><role-name>manager</role-name></auth-constraint></security-constraint><login-config><auth-method>BASIC</auth-method><realm-name>Hudson</realm-name></login-config>
+
+- name: Copy over tomcat-users.xml file
+  copy: src=tomcat-users.xml dest=/usr/local/tomcat/conf/tomcat-users.xml owner=root group=root mode=0644
+  tags: auth
+  notify: restart tomcat
+ 
