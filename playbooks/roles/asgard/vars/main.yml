@@ -1,4 +1,4 @@
 ---
 ami_build: ami is defined and ami 
 not_ami_build: ami is not defined or not ami
-latest_successful_build_url: https://github.com/Netflix/asgard/releases/download/asgard-1.4/asgard.war
+latest_successful_build_url: https://github.com/Netflix/asgard/releases/download/asgard-1.4.1/asgard.war
