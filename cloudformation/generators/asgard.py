@@ -7,7 +7,7 @@ import troposphere.ec2 as ec2
 
 
 template = Template()
-template.add_description('NetflixOSS Asgard 1.3.1 - Template by Answers for AWS')
+template.add_description('NetflixOSS Asgard 1.4.1 - Template by Answers for AWS')
 
 keyname = template.add_parameter(Parameter(
     "KeyPairName",
@@ -43,14 +43,14 @@ java_license = template.add_parameter(Parameter(
 ))
 
 template.add_mapping('RegionMap', {
-    "us-east-1":      {"AMI": "ami-4d755a24"},
-    "us-west-1":      {"AMI": "ami-0c251549"},
-    "us-west-2":      {"AMI": "ami-d0ceabe0"},
-    "eu-west-1":      {"AMI": "ami-44bf5633"},
-    "sa-east-1":      {"AMI": "ami-9394358e"},
-    "ap-southeast-1": {"AMI": "ami-fea1f5ac"},
-    "ap-southeast-2": {"AMI": "ami-d3a33ce9"},
-    "ap-northeast-1": {"AMI": "ami-616e0d60"}
+    "us-east-1":      {"AMI": "ami-7724131e"},
+    "us-west-1":      {"AMI": "ami-3cdcef79"},
+    "us-west-2":      {"AMI": "ami-a86f0998"},
+    "eu-west-1":      {"AMI": "ami-a8e10bdf"},
+    "sa-east-1":      {"AMI": "ami-4bf85856"},
+    "ap-southeast-1": {"AMI": "ami-149fc846"},
+    "ap-southeast-2": {"AMI": "ami-e5d749df"},
+    "ap-northeast-1": {"AMI": "ami-8f39568e"}
 })
 
 # Create a security group
@@ -76,7 +76,10 @@ ec2_instance = template.add_resource(ec2.Instance(
     ImageId=FindInMap("RegionMap", Ref("AWS::Region"), "AMI"),
     InstanceType=Ref(instance_type),
     KeyName=Ref(keyname),
-    SecurityGroups=[Ref(sg)]
+    SecurityGroups=[Ref(sg)],
+    Tags = [
+        {'Key': 'Name', 'Value': 'Asgard'}
+    ]
 ))
 
 template.add_output([
