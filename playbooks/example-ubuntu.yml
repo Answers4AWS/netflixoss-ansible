@@ -1,0 +1,13 @@
+---
+# Example playbook for running your own application on ubuntu
+- name: Example
+  user: ubuntu
+  sudo: True
+  tags: example
+  hosts: all
+  roles:
+    - base
+    - tomcat
+    - example
+  vars_files:
+    - vars/{{ ansible_distribution }}.yml

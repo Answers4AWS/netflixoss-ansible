@@ -1,0 +1,9 @@
+---
+# Example role
+- name: Remove default root webapp
+  file: path=/usr/local/tomcat/webapps/ROOT state=absent
+
+- name: Download WAR file from url
+  get_url: url={{ war_url }} dest=/usr/local/tomcat/webapps/ROOT.war
+  tags: deploy
+  
