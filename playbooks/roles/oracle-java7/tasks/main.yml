@@ -27,7 +27,7 @@
   apt: update-cache=yes
   
 - name: Install Oracle Java 7 JDK (apt version)
-  apt: pkg=oracle-java7-jdk state=latest
+  apt: pkg=oracle-java7-jdk state=latest force=true
   when: ansible_distribution == 'Ubuntu'
 
 - name: Symlink Java 7
