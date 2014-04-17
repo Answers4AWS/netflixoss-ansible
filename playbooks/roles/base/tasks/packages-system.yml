@@ -26,7 +26,6 @@
     - perl
     - python
     - python-pip
-    - ruby-json
     - sudo
     - unzip
     - xfsprogs
