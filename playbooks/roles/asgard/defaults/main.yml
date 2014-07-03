@@ -1,0 +1,9 @@
+---
+  # Set to "no" to disable BASIC Authentication
+  asgard_enable_basic_auth: yes
+  
+  # BASIC auth username to access Asgard
+  asgard_username: asgard
+
+  # BASIC auth password to access Asgard
+  asgard_password: password
