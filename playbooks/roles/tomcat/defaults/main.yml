@@ -1,0 +1,13 @@
+---
+  # Forward port 80 to 8080
+  tomcat_skip_port_forwarding: False
+  
+  # JAVA_OPTS for Tomcat: memory
+  tomcat_xmx: 512m
+  
+  # JAVA_OPTS for Tomcat: everything else
+  tomcat_extra_opts: ""
+
+  # This has nothing to do with the port forwarding above, so if you change
+  # this, you probably want to disable the forwarding as well.
+  tomcat_port: 8080

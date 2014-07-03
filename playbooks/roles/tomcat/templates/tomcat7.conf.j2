@@ -18,7 +18,7 @@ JASPER_HOME="/usr/share/tomcat7"
 CATALINA_TMPDIR="/var/cache/tomcat7/temp"
 
 # Use JAVA_OPTS to set java.library.path for libtcnative.so
-JAVA_OPTS="-Djava.library.path=/usr/lib64 -Xmx{{ tomcat_xmx|default('512m') }}  {{ tomcat_extra_opts|default('') }}"
+JAVA_OPTS="-Djava.library.path=/usr/lib64 -Xmx{{ tomcat_xmx }} {{ tomcat_extra_opts }}"
 
 # What user should run tomcat
 TOMCAT_USER="tomcat"
@@ -39,7 +39,7 @@ SHUTDOWN_VERBOSE="false"
 CATALINA_PID="/var/run/tomcat7.pid"
 
 # Connector port is 8080 for this tomcat instance
-CONNECTOR_PORT="{{ tomcat_port|default('8080') }}"
+CONNECTOR_PORT="{{ tomcat_port }}"
 
 # If you wish to further customize your tomcat environment,
 # put your own definitions here

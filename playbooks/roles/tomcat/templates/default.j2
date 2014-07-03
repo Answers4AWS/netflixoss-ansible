@@ -18,7 +18,7 @@ JAVA_HOME=/usr/lib/jvm/default-java
 # response time). If you use that option and you run Tomcat on a machine with
 # exactly one CPU chip that contains one or two cores, you should also add
 # the "-XX:+CMSIncrementalMode" option.
-JAVA_OPTS="-Djava.awt.headless=true -XX:MaxPermSize=256M -Xmx{{ tomcat_xmx|default('512m') }} -XX:+UseConcMarkSweepGC {{ tomcat_extra_opts|default('') }}"
+JAVA_OPTS="-Djava.awt.headless=true -XX:MaxPermSize=256M -Xmx{{ tomcat_xmx }} -XX:+UseConcMarkSweepGC {{ tomcat_extra_opts }}"
 
 # To enable remote debugging uncomment the following line.
 # You will then be able to use a java debugger on port 8000.
