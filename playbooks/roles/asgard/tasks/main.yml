@@ -16,8 +16,8 @@
   when: local_war != ""
   tags: deploy
   
-- name: Download snapshot build of Asgard from Cloudbees
-  get_url: url={{ latest_successful_build_url }} dest=/usr/local/tomcat/webapps/asgard.war
+- name: Download Asgard WAR file
+  get_url: url={{ asgard_war_url }} dest=/usr/local/tomcat/webapps/asgard.war
   when: local_war == ""
   tags: deploy
   
@@ -41,13 +41,19 @@
    
 - name: Add BASIC auth requirements to web.xml
   lineinfile: dest=/usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml regexp="security-constraint" line="<security-constraint><web-resource-collection><web-resource-name></web-resource-name><url-pattern>/*</url-pattern></web-resource-collection><auth-constraint><role-name>asgard</role-name></auth-constraint></security-constraint><login-config><auth-method>BASIC</auth-method><realm-name>asgard</realm-name></login-config>" insertbefore="</web-app>"
-  tags: auth
+  when: asgard_enable_basic_auth == "yes"
   notify: restart tomcat
-   
-#<security-constraint><web-resource-collection><web-resource-name></web-resource-name><url-pattern>/*</url-pattern></web-resource-collection><auth-constraint><role-name>manager</role-name></auth-constraint></security-constraint><login-config><auth-method>BASIC</auth-method><realm-name>Hudson</realm-name></login-config>
+  tags: auth
+
+- name: Remove BASIC auth from web.xml
+  lineinfile: dest=/usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml regexp="security-constraint" state=absent
+  when: asgard_enable_basic_auth != "yes"
+  notify: restart tomcat
+  tags: auth
 
 - name: Copy over tomcat-users.xml file
-  copy: src=tomcat-users.xml dest=/usr/local/tomcat/conf/tomcat-users.xml owner=root group=root mode=0644
-  tags: auth
+  template: src=tomcat-users.xml.j2 dest=/usr/local/tomcat/conf/tomcat-users.xml owner=root group=root mode=0644
+  when: asgard_enable_basic_auth == "yes"
   notify: restart tomcat
+  tags: auth
  

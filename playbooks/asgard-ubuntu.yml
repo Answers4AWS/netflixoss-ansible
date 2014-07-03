@@ -3,15 +3,15 @@
 - name: Asgard
   user: ubuntu
   sudo: True
-  tags: asgard
   hosts: all
   roles:
-    - base
-    - oracle-java7
-    - tomcat
-    - asgard
+    - { role: base, tags: ['base'] }
+    - { role: oracle-java7, tags: ['java'] }
+    - { role: tomcat, tags: ['tomcat'] }
+    - { role: asgard, tags: ['asgard'] }
   vars:
     local_war: "" 
     tomcat_extra_opts: "-Darchaius.deployment.applicationId=asgard -Dnetflix.datacenter=cloud"
   vars_files:
+    - vars/common.yml
     - vars/{{ ansible_distribution }}.yml
