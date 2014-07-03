@@ -1,0 +1,3 @@
+---
+  ami_build: ami is defined and ami 
+  not_ami_build: ami is not defined or not ami

@@ -50,3 +50,6 @@
 - name: Copy rc.local template
   copy: src={{ ansible_distribution }}/rc.local dest={{ rc_local_path }}  owner=root group=root mode=0755
   
+- name: Get cloud-init to manage hosts file
+  lineinfile: 'dest=/etc/cloud/cloud.cfg state=present line="manage_etc_hosts: True" regexp="^manage_etc_hosts\: True" insertafter="^preserve_hostname"'
+  tags: cloud-init

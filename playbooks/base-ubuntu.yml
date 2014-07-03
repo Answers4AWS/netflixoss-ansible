@@ -3,9 +3,9 @@
 - name: Base
   user: ubuntu
   sudo: True
-  tags: base
   hosts: all
   roles:
-    - base
+    - { role: base, tags: ['base'] }
   vars_files:
+    - vars/common.yml
     - vars/{{ ansible_distribution }}.yml
