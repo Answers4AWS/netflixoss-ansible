@@ -23,7 +23,7 @@ These playbooks are quite low level as they include each step required to config
 ## Prerequisites
 
 1. [Ansible installed](http://www.ansibleworks.com/docs/gettingstarted.html) on your laptop
-1. The [Ansible EC2 Inventory](http://www.ansibleworks.com/docs/api.html/#example-aws-ec2-external-inventory-script) configured
+1. The [Ansible EC2 Inventory](http://docs.ansible.com/intro_dynamic_inventory.html#example-aws-ec2-external-inventory-script) configured
 1. Clone this repository
 
 For steps 1 and 2, [watch the first 3 minutes of Episode 2 - Ansible and AWS](http://answersforaws.com/episodes/2-ansible-and-aws/).
