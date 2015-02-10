@@ -1,5 +1,7 @@
 # NetflixOSS Ansible Playbooks
 
+[![Join the chat at https://gitter.im/Answers4AWS/netflixoss-ansible](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Answers4AWS/netflixoss-ansible?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Welcome to the [NetflixOSS Cloud Prize award winning playbooks, AMIs and CloudFormation templates](http://techblog.netflix.com/2013/11/netflix-open-source-software-cloud.html).
 
 [Ansible](https://github.com/ansible/ansible/) is a configuration management system that is [very simple to learn and use](http://answersforaws.com/episodes/2-ansible-and-aws/).
