@@ -143,6 +143,22 @@
                         "FromPort": 80, 
                         "IpProtocol": "tcp", 
                         "ToPort": 80
+                    },
+                    {
+                        "CidrIp": {
+                            "Fn::Join": [
+                                "/", 
+                                [
+                                    {
+                                        "Ref": "YourIpAddress"
+                                    }, 
+                                    "32"
+                                ]
+                            ]
+                        }, 
+                        "FromPort": 8080, 
+                        "IpProtocol": "tcp", 
+                        "ToPort": 8080
                     }
                 ]
             }, 
