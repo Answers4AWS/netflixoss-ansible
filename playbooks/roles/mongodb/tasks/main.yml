@@ -7,11 +7,24 @@
   when: ansible_distribution == 'Ubuntu'
   tags: mongodb
   
+#- name: Install MongoDB (yum version)
+#  yum: pkg={{ item }} state=latest enablerepo=epel
+#  with_items:
+#    - mongodb
+#    - mongodb-server
+#  when: ansible_distribution == 'Amazon'
+#  tags: mongodb
+
+- name: Install Selected Yum Repository for MongoDB
+  copy: src=../files/mongodb.repo dest=/etc/yum.repos.d/mongodb.repo
+  when: ansible_distribution == 'Amazon'
+  tags: mongodb
+
 - name: Install MongoDB (yum version)
-  yum: pkg={{ item }} state=latest enablerepo=epel
+  yum: pkg={{ item }} state=latest
   with_items:
-    - mongodb
-    - mongodb-server
+    - mongo-10gen
+    - mongo-10gen-server
   when: ansible_distribution == 'Amazon'
   tags: mongodb
   
