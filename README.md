@@ -100,6 +100,7 @@ If all of that seems too hard, feel free to use the [Aminator CloudFormation tem
 1. Create an Asgard security group
  - Allow port 22 for SSH
  - Allow port 80 for HTTP
+ - Allow port 8080 for HTTP
 1. If you don't already have one, create a new Key Pair, and add it to your keychain or SSH agent so you don't need to specify it later:
 ```
 $ ssh-add mykey.pem
