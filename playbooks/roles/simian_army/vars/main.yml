@@ -1,4 +1,4 @@
 ---
 ami_build: ami is defined and ami 
 not_ami_build: ami is not defined or not ami
-latest_successful_build_url: https://netflixoss.ci.cloudbees.com/job/SimianArmy-master/lastSuccessfulBuild/artifact/build/libs/simianarmy-2.4-SNAPSHOT.war
+latest_successful_build_url: https://oss.jfrog.org/oss-snapshot-local/com/netflix/simianarmy/simianarmy/2.6.0-SNAPSHOT/simianarmy-2.6.0-SNAPSHOT.war
