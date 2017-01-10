@@ -11,6 +11,9 @@
 - name: Create Asgard Home at /usr/share/tomcat7/.asgard
   file: path=/usr/share/tomcat7/.asgard state=directory owner={{ tomcat_user }}  group={{ tomcat_user }}  mode=0755
 
+- name: Copy over Config.groovy file
+  template: src=Config.groovy.j2 dest=/usr/share/tomcat7/.asgard/Config.groovy owner={{ tomcat_user }}  group={{ tomcat_user }}  mode=0755
+
 - name: Copy local Asgard WAR file {{ local_war }}
   copy: src={{ local_war }} dest=/usr/local/tomcat/webapps/asgard.war
   when: local_war != ""
@@ -56,4 +59,4 @@
   when: asgard_enable_basic_auth == "yes"
   notify: restart tomcat
   tags: auth
- 
+

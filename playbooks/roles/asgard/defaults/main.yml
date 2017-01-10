@@ -7,3 +7,15 @@
 
   # BASIC auth password to access Asgard
   asgard_password: password
+
+  # Friendly AWS Account Name (will appear in header of Asgard page) Such as dev/build/stage/prod
+  aws_account_name: build
+
+  # AWS Account Number where asgard lives
+  aws_account_number: 11111
+
+  # AWS API Access ID
+  aws_access_id: ACCESS_ID_HERE
+
+  # AWS API Secret Key
+  aws_secret_key: SECRET_KEY_HERE
